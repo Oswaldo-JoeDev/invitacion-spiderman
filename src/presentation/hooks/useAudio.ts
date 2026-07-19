@@ -6,12 +6,35 @@ export const useAudio = (audioUrl: string) => {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const audioCtxRef = useRef<AudioContext | null>(null);
 
+  const wasPlayingRef = useRef(false);
+
   useEffect(() => {
     const audio = new Audio(audioUrl);
     audio.loop = true;
     audioRef.current = audio;
 
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        if (audioRef.current && !audioRef.current.paused) {
+          wasPlayingRef.current = true;
+          audioRef.current.pause();
+          setIsPlaying(false);
+        } else {
+          wasPlayingRef.current = false;
+        }
+      } else {
+        if (wasPlayingRef.current && audioRef.current) {
+          audioRef.current.play()
+            .then(() => setIsPlaying(true))
+            .catch(e => console.warn(e));
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
     return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
       audio.pause();
       audioRef.current = null;
     };
