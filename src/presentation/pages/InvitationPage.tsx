@@ -334,9 +334,6 @@ export const InvitationPage: React.FC = () => {
             <FaComment /> Confirmar Asistencia por WhatsApp
           </RsvpButton>
 
-          {/* Music Control headphones */}
-          <AudioController isPlaying={isPlaying} onToggle={toggleMusic} />
-
           {/* Footer */}
           <CardFooter>
             <Typography variant="body2" sx={{ mb: 1 }}>
@@ -349,6 +346,9 @@ export const InvitationPage: React.FC = () => {
           </LandingContainer>
         </>
       )}
+
+      {/* Music Control headphones - rendered outside hasEntered, so it is always visible! */}
+      <AudioController isPlaying={isPlaying} onToggle={toggleMusic} />
     </Box>
   );
 };

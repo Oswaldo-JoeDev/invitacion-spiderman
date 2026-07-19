@@ -110,46 +110,6 @@ export const HeroBanner: React.FC = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Force video to start at second 36 and loop back to second 36 safely
-  useEffect(() => {
-    const video = videoRef.current;
-    if (!video) return;
-
-    const handleLoadedMetadata = () => {
-      video.currentTime = 36;
-      video.play().catch(() => {});
-    };
-
-    const handleTimeUpdate = () => {
-      // Prevent seeking command overload during active seek
-      if (video.seeking) return;
-      
-      // Loop check: if video reaches end or wraps back to 0, seek to 36
-      if (video.currentTime < 36) {
-        video.currentTime = 36;
-      }
-    };
-
-    const handleSeeked = () => {
-      video.play().catch(() => {});
-    };
-
-    video.addEventListener('loadedmetadata', handleLoadedMetadata);
-    video.addEventListener('timeupdate', handleTimeUpdate);
-    video.addEventListener('seeked', handleSeeked);
-
-    if (video.readyState >= 1) {
-      video.currentTime = 36;
-      video.play().catch(() => {});
-    }
-
-    return () => {
-      video.removeEventListener('loadedmetadata', handleLoadedMetadata);
-      video.removeEventListener('timeupdate', handleTimeUpdate);
-      video.removeEventListener('seeked', handleSeeked);
-    };
-  }, []);
-
   return (
     <BannerCard>
       <ImageContainer>
