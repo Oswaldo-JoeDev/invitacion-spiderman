@@ -375,11 +375,18 @@ export const PlayOverlay: React.FC<PlayOverlayProps> = ({
       // Main thick web line
       const currentY = startY + (endY - startY) * progress;
 
+      // 1. Draw thicker outer neon cyan line for glow
       ctx.beginPath();
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
-      ctx.lineWidth = 4;
-      ctx.shadowBlur = 8;
-      ctx.shadowColor = "#00f0ff";
+      ctx.strokeStyle = "rgba(0, 240, 255, 0.45)";
+      ctx.lineWidth = 9;
+      ctx.moveTo(startX, startY);
+      ctx.lineTo(startX, currentY);
+      ctx.stroke();
+
+      // 2. Draw thin inner white core line
+      ctx.beginPath();
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.98)";
+      ctx.lineWidth = 3;
       ctx.moveTo(startX, startY);
       ctx.lineTo(startX, currentY);
       ctx.stroke();

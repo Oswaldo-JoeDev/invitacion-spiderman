@@ -102,9 +102,7 @@ export const BackgroundParticles: React.FC = () => {
       // Apply breathing global alpha pulse
       ctx.globalAlpha = pulse;
       ctx.strokeStyle = web.color;
-      ctx.lineWidth = 1.1;
-      ctx.shadowBlur = 6 * pulse;  // pulsing glow radius
-      ctx.shadowColor = web.color;
+      ctx.lineWidth = 1.4;
 
       // 1. Draw spoke lines
       for (let i = 0; i < web.spokes; i++) {
