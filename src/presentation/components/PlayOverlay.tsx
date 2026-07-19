@@ -50,7 +50,7 @@ const LogoImg = styled("img")({
 const GlitchTitle = styled(Typography)({
   fontFamily: "'Space Grotesk', sans-serif",
   color: "#ffffff",
-  fontSize: "1.8rem",
+  fontSize: "1.3rem",
   fontWeight: 800,
   textTransform: "uppercase",
   textAlign: "center",
@@ -76,15 +76,15 @@ const GlitchTitle = styled(Typography)({
 });
 
 const TextCard = styled(Box)({
-  backgroundColor: "#ff0000a",
-  border: "1px solid rgba(255, 255, 255, 0.027)",
+  backgroundColor: "rgba(16, 16, 22, 0.103)",
+  border: "1px solid rgba(255, 255, 255, 0.046)",
   borderRadius: "24px",
   padding: "2.2rem 1.6rem",
   width: "90dvw",
   boxShadow:
-    "0 20px 45px rgba(0, 0, 0, 0.189), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
-  backdropFilter: "blur(16px)",
-  WebkitBackdropFilter: "blur(2px)",
+    "0 20px 45px ergba(0, 0, 0, 0.071), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+  backdropFilter: "blur(30px)",
+  WebkitBackdropFilter: "blur(3px)",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -99,9 +99,12 @@ const StartButton = styled(Button)({
   fontSize: "0.8rem",
   letterSpacing: "1px",
   padding: "12px 8px",
-  boxShadow: "0 0 12px rgba(255, 28, 36, 0.4)",
+  border: "1px solid #ff1c2466",
+  boxShadow: "0 0 12px #ff1c2466",
   transition: "all 0.25s ease",
   zIndex: 1020,
+  animation: "dateNumberGlitch 4s infinite alternate ease-in-out",
+
   "&:hover": {
     transform: "scale(1.02)",
     borderColor: "#00f0ff",
@@ -146,6 +149,41 @@ const SpiderSenseImg = styled("img")({
   imageRendering: "auto",
 });
 
+const ShockwaveRing = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'delay',
+})<{ delay: string }>(({ delay }) => ({
+  position: 'absolute',
+  top: '50%',
+  left: '50%',
+  transform: 'translate(-50%, -50%)',
+  borderRadius: '50%',
+  border: '3px solid #ff1c24',
+  pointerEvents: 'none',
+  zIndex: 1,
+  animation: 'senseRadiate 2.4s infinite cubic-bezier(0.1, 0.8, 0.3, 1)',
+  animationDelay: delay,
+  '@keyframes senseRadiate': {
+    '0%': {
+      width: '50px',
+      height: '50px',
+      opacity: 0.9,
+      borderColor: '#ffeb3b',
+      boxShadow: '0 0 20px #ffeb3b, inset 0 0 10px #ffeb3b',
+    },
+    '50%': {
+      borderColor: '#ff1c24',
+      boxShadow: '0 0 40px #ff1c24, inset 0 0 20px #ff1c24',
+    },
+    '100%': {
+      width: '800px',
+      height: '800px',
+      opacity: 0,
+      borderColor: 'rgba(255, 28, 36, 0)',
+      boxShadow: '0 0 60px rgba(255, 28, 36, 0)',
+    }
+  }
+}));
+
 const WebCanvas = styled("canvas")({
   position: "absolute",
   inset: 0,
@@ -162,7 +200,7 @@ const DateSection = styled(Box)({
 });
 
 const DateNumber = styled(Typography)({
-  fontSize: "2.2rem",
+  fontSize: "5.2rem",
   fontWeight: 400,
   lineHeight: 0.9,
   color: "#ff1c24",
@@ -204,7 +242,7 @@ const DateNumber = styled(Typography)({
 });
 
 const DateMonth = styled(Typography)({
-  fontSize: "4.4rem",
+  fontSize: "2rem",
   fontWeight: 400,
   textTransform: "uppercase",
   color: "#ffffff",
@@ -212,6 +250,16 @@ const DateMonth = styled(Typography)({
   letterSpacing: "1px",
   marginTop: "4px",
   display: "block",
+  animation: "dateNumberGlitch 4s infinite alternate ease-in-out",
+});
+
+const MateoNameImg = styled("img")({
+  width: "100%",
+  maxWidth: "280px",
+  height: "auto",
+  margin: "8px auto 14px",
+  display: "block",
+  filter: "drop-shadow(0 0 10px rgba(255, 28, 36, 0.45))",
   animation: "dateNumberGlitch 4s infinite alternate ease-in-out",
 });
 
@@ -396,13 +444,13 @@ export const PlayOverlay: React.FC<PlayOverlayProps> = ({
           </GlitchTitle>
 
           <DateSection>
-            <DateNumber>MATEO SEBASTIAN</DateNumber>
-            <DateMonth>3 </DateMonth>
-            <DateNumber>AÑOS</DateNumber>
+            <MateoNameImg src="/mateo_name.png" alt="Mateo Sebastian Name" />
+            <DateNumber>3</DateNumber>
+            <DateMonth>AÑOS</DateMonth>
           </DateSection>
 
           <StartButton onClick={handleStart} fullWidth>
-          🕸️ INGRESAR AL MULTIVERSO 🕸️
+            INGRESAR AL MULTIVERSO 🕸️
           </StartButton>
         </TextCard>
       </Box>
@@ -413,9 +461,17 @@ export const PlayOverlay: React.FC<PlayOverlayProps> = ({
         isActive={isSpideyDropped}
         isZippingUp={isZippingUp}
       >
+        {isSpideyDropped && (
+          <>
+            <ShockwaveRing delay="0s" />
+            <ShockwaveRing delay="0.8s" />
+            <ShockwaveRing delay="1.6s" />
+          </>
+        )}
         <SpiderSenseImg
           src={processedImage || "/spidersense_miles.png"}
           alt="Spider-Sense Miles"
+          style={{ position: 'relative', zIndex: 2 }}
         />
       </SpiderSenseContainer>
     </OverlayWrapper>

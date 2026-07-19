@@ -13,19 +13,19 @@ const TicketSectionTitle = styled(Typography)({
 });
 
 const TicketWrapperContainer = styled(Box)({
-  border: "1px solid rgba(255, 255, 255, 0.09)",
+  border: "1px solid rgba(255, 255, 255, 0.12)",
   borderRadius: "20px",
   padding: "1.6rem 1.25rem",
-  backgroundColor: "rgba(16, 16, 22, 0.72)",
+  backgroundColor: "rgba(16, 16, 22, 0.45)",
   boxShadow:
-    "0 20px 45px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+    "0 20px 45px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
   marginBottom: "20px",
   position: "relative",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  backdropFilter: "blur(24px) saturate(120%)",
-  WebkitBackdropFilter: "blur(24px) saturate(120%)",
+  backdropFilter: "blur(30px) saturate(130%)",
+  WebkitBackdropFilter: "blur(30px) saturate(130%)",
   "&::before, &::after": {
     content: "''",
     position: "absolute",

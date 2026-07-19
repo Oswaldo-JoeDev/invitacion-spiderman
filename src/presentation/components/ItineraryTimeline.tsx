@@ -6,14 +6,14 @@ import { FaChurch, FaFortAwesome, FaUtensils, FaStar, FaBirthdayCake, FaDoorOpen
 import { ItineraryItem } from '../../domain/entities/EventDetails';
 
 const ItineraryCard = styled(Box)({
-  border: '1px solid rgba(255, 255, 255, 0.09)',
+  border: '1px solid rgba(255, 255, 255, 0.12)',
   borderRadius: '24px',
   padding: '1.8rem 1.25rem',
-  backgroundColor: 'rgba(16, 16, 22, 0.72)',
-  boxShadow: '0 20px 45px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+  backgroundColor: 'rgba(16, 16, 22, 0.45)',
+  boxShadow: '0 20px 45px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
   marginBottom: '20px',
-  backdropFilter: 'blur(24px) saturate(120%)',
-  WebkitBackdropFilter: 'blur(24px) saturate(120%)',
+  backdropFilter: 'blur(30px) saturate(130%)',
+  WebkitBackdropFilter: 'blur(30px) saturate(130%)',
 });
 
 const ItineraryTitle = styled(Typography)({

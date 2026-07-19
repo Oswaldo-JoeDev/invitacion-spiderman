@@ -33,16 +33,28 @@ export const BackgroundParticles: React.FC = () => {
     if (!ctx) return;
 
     let animationFrameId: number;
-    let width = (canvas.width = window.innerWidth);
-    let height = (canvas.height = window.innerHeight);
+    let dpr = window.devicePixelRatio || 1;
+    let width = window.innerWidth;
+    let height = window.innerHeight;
     let lastWidth = window.innerWidth;
+
+    const resize = () => {
+      dpr = window.devicePixelRatio || 1;
+      width = window.innerWidth;
+      height = window.innerHeight;
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.resetTransform();
+      ctx.scale(dpr, dpr);
+    };
+
+    resize();
 
     const handleResize = () => {
       // Only trigger resize when horizontal viewport width changes,
       // ignoring address bar vertical scrolls on mobile.
       if (window.innerWidth !== lastWidth) {
-        width = canvas.width = window.innerWidth;
-        height = canvas.height = window.innerHeight;
+        resize();
         lastWidth = window.innerWidth;
       }
     };

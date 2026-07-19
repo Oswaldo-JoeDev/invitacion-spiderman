@@ -1,18 +1,18 @@
 // src/presentation/components/HeroBanner.tsx
 import React, { useEffect, useRef, useState } from "react";
 import { styled } from "@mui/material/styles";
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, CircularProgress } from "@mui/material";
 
 const BannerCard = styled(Box)({
-  border: '1px solid rgba(255, 255, 255, 0.09)',
+  border: '1px solid rgba(255, 255, 255, 0.12)',
   borderRadius: '28px',
-  backgroundColor: 'rgba(16, 16, 22, 0.72)',
+  backgroundColor: 'rgba(16, 16, 22, 0.45)',
   margin: '20px 0',
   overflow: 'hidden',
-  boxShadow: '0 20px 45px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
+  boxShadow: '0 20px 45px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
   position: 'relative',
-  backdropFilter: 'blur(24px) saturate(120%)',
-  WebkitBackdropFilter: 'blur(24px) saturate(120%)',
+  backdropFilter: 'blur(30px) saturate(130%)',
+  WebkitBackdropFilter: 'blur(30px) saturate(130%)',
 });
 
 const ImageContainer = styled(Box)({
@@ -21,8 +21,6 @@ const ImageContainer = styled(Box)({
   position: "relative",
   overflow: "hidden",
   borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
-  backgroundSize: 'cover',
-  backgroundPosition: 'center',
 });
 
 const BannerVideo = styled("video")({
@@ -34,6 +32,17 @@ const BannerVideo = styled("video")({
   transition: "transform 0.1s ease-out",
   border: "none",
   outline: "none",
+});
+
+const LoaderContainer = styled(Box)({
+  position: 'absolute',
+  inset: 0,
+  backgroundColor: '#070709', // clean solid dark background during load
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  zIndex: 2,
+  transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
 });
 
 const TitleOverlay = styled(Box)({
@@ -111,7 +120,7 @@ export const HeroBanner: React.FC = () => {
 
   return (
     <BannerCard>
-      <ImageContainer sx={{ backgroundImage: isVideoPlaying ? 'none' : 'url("/miles_comic_bg.jpg")' }}>
+      <ImageContainer>
         <BannerVideo
           ref={videoRef}
           src="/salto-fe.mp4"
@@ -120,9 +129,36 @@ export const HeroBanner: React.FC = () => {
           muted
           playsInline
           preload="auto"
-          poster="/miles_comic_bg.jpg"
           onPlaying={() => setIsVideoPlaying(true)}
         />
+
+        {/* Custom loading overlay with circular progress around pin-loader image */}
+        <LoaderContainer style={{ opacity: isVideoPlaying ? 0 : 1, pointerEvents: isVideoPlaying ? 'none' : 'auto' }}>
+          <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+            <CircularProgress 
+              size={76} 
+              sx={{ color: '#ff1c24' }} 
+            />
+            <Box
+              sx={{
+                top: 0,
+                left: 0,
+                bottom: 0,
+                right: 0,
+                position: 'absolute',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <img 
+                src="/pin-loader.png" 
+                alt="Cargando video..." 
+                style={{ width: '40px', height: '40px', display: 'block' }} 
+              />
+            </Box>
+          </Box>
+        </LoaderContainer>
       </ImageContainer>
 
       <TitleOverlay>
