@@ -21,8 +21,6 @@ const ImageContainer = styled(Box)({
   position: "relative",
   overflow: "hidden",
   borderBottom: "1px solid rgba(255, 255, 255, 0.08)",
-  // Instant visual fallback (poster background) while video loads/buffers
-  backgroundImage: 'url("/miles_comic_bg.jpg")',
   backgroundSize: 'cover',
   backgroundPosition: 'center',
 });
@@ -63,6 +61,7 @@ const IntroDesc = styled(Typography)({
 export const HeroBanner: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const [processedLogo, setProcessedLogo] = useState<string | null>(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   useEffect(() => {
     // Process cover logo (making background transparent and black text white)
@@ -112,16 +111,17 @@ export const HeroBanner: React.FC = () => {
 
   return (
     <BannerCard>
-      <ImageContainer>
+      <ImageContainer sx={{ backgroundImage: isVideoPlaying ? 'none' : 'url("/miles_comic_bg.jpg")' }}>
         <BannerVideo
           ref={videoRef}
-          src="/salto-fe.webm"
+          src="/salto-fe.mp4"
           autoPlay
           loop
           muted
           playsInline
           preload="auto"
           poster="/miles_comic_bg.jpg"
+          onPlaying={() => setIsVideoPlaying(true)}
         />
       </ImageContainer>
 
