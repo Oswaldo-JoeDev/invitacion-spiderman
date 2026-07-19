@@ -290,8 +290,10 @@ export const InvitationPage: React.FC = () => {
 
   return (
     <Box>
-      {/* Splash overlay initial check */}
-      <PlayOverlay onEnter={handleEnter} playThwip={playThwip} />
+      {/* Splash overlay initial check - unmounts completely after entry to free VRAM/memory */}
+      {!hasEntered && (
+        <PlayOverlay onEnter={handleEnter} playThwip={playThwip} />
+      )}
 
       {hasEntered && (
         <>
