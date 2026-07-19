@@ -84,7 +84,7 @@ const TextCard = styled(Box)({
   boxShadow:
     "0 20px 45px ergba(0, 0, 0, 0.071), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
   backdropFilter: "blur(30px)",
-  WebkitBackdropFilter: "blur(3px)",
+  WebkitBackdropFilter: "blur(2px)",
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
@@ -427,7 +427,7 @@ export const PlayOverlay: React.FC<PlayOverlayProps> = ({
   return (
     <OverlayWrapper isHidden={isOverlayHidden} isZippingUp={isZippingUp}>
       <LogoImg
-        src="/spider-team.jpg"
+        src="/spider-team.png"
         alt="Spider-Man Logo"
         style={{ display: isElementsHidden ? "none" : "block" }}
       />
