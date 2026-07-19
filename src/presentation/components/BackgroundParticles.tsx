@@ -32,7 +32,6 @@ export const BackgroundParticles: React.FC = () => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    let animationFrameId: number;
     let dpr = window.devicePixelRatio || 1;
     let width = window.innerWidth;
     let height = window.innerHeight;
@@ -50,16 +49,6 @@ export const BackgroundParticles: React.FC = () => {
 
     resize();
 
-    const handleResize = () => {
-      // Only trigger resize when horizontal viewport width changes,
-      // ignoring address bar vertical scrolls on mobile.
-      if (window.innerWidth !== lastWidth) {
-        resize();
-        lastWidth = window.innerWidth;
-      }
-    };
-    window.addEventListener('resize', handleResize);
-
     // Initialize 3 beautiful spider-webs at different viewport coordinates
     const webs: SpiderWeb[] = [
       {
@@ -68,9 +57,9 @@ export const BackgroundParticles: React.FC = () => {
         radius: 180,
         spokes: 8,
         rings: 5,
-        rotation: 0,
-        rotSpeed: 0.0003, // Slow rotate
-        color: 'rgba(0, 240, 255, 0.22)', // cyan tint
+        rotation: 0.1, // static rotation
+        rotSpeed: 0,
+        color: 'rgba(0, 240, 255, 0.28)', // cyan tint
       },
       {
         x: width + 20,
@@ -79,8 +68,8 @@ export const BackgroundParticles: React.FC = () => {
         spokes: 10,
         rings: 6,
         rotation: Math.PI / 4,
-        rotSpeed: -0.0002,
-        color: 'rgba(255, 28, 36, 0.22)', // red tint
+        rotSpeed: 0,
+        color: 'rgba(255, 28, 36, 0.28)', // red tint
       },
       {
         x: width * 0.1,
@@ -89,18 +78,18 @@ export const BackgroundParticles: React.FC = () => {
         spokes: 7,
         rings: 4,
         rotation: 1.2,
-        rotSpeed: 0.0004,
-        color: 'rgba(255, 255, 255, 0.16)', // white tint
+        rotSpeed: 0,
+        color: 'rgba(255, 255, 255, 0.22)', // white tint
       }
     ];
 
-    const drawWeb = (web: SpiderWeb, pulse: number) => {
+    const drawWeb = (web: SpiderWeb, opacity: number) => {
       ctx.save();
       ctx.translate(web.x, web.y);
       ctx.rotate(web.rotation);
 
-      // Apply breathing global alpha pulse
-      ctx.globalAlpha = pulse;
+      // Apply static global alpha
+      ctx.globalAlpha = opacity;
       ctx.strokeStyle = web.color;
       ctx.lineWidth = 1.4;
 
@@ -139,36 +128,39 @@ export const BackgroundParticles: React.FC = () => {
       ctx.restore();
     };
 
-    const draw = () => {
+    const drawOnce = () => {
       ctx.clearRect(0, 0, width, height);
 
-      // Smooth breath-like pulse factor (oscillates between 0.70 and 1.00 over ~5 seconds)
-      const pulse = Math.sin(Date.now() * 0.0012) * 0.15 + 0.85;
-
-      // Draw all webs
-      webs.forEach((web) => {
-        // Update rotation
-        web.rotation += web.rotSpeed;
-        
-        // Dynamically adjust web positions on resize to keep them at corners
-        if (web.x < 0 && web.y < 200) {
-          web.x = -20;
-        } else if (web.x > width - 100 && web.y > height - 300) {
+      // Draw all webs statically once
+      webs.forEach((web, idx) => {
+        // Dynamically adjust web positions to keep them anchored correctly
+        if (idx === 1) {
           web.x = width + 20;
           web.y = height - 120;
+        } else if (idx === 2) {
+          web.x = width * 0.1;
+          web.y = height * 0.5;
         }
 
-        drawWeb(web, pulse);
+        drawWeb(web, 0.80);
       });
-
-      animationFrameId = requestAnimationFrame(draw);
     };
 
-    draw();
+    drawOnce();
+
+    const handleResize = () => {
+      // Only trigger resize when horizontal viewport width changes,
+      // ignoring address bar vertical scrolls on mobile.
+      if (window.innerWidth !== lastWidth) {
+        resize();
+        drawOnce();
+        lastWidth = window.innerWidth;
+      }
+    };
+    window.addEventListener('resize', handleResize);
 
     return () => {
       window.removeEventListener('resize', handleResize);
-      cancelAnimationFrame(animationFrameId);
     };
   }, []);
 
