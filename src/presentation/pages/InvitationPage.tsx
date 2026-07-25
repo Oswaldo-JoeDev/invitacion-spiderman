@@ -510,19 +510,25 @@ export const InvitationPage: React.FC = () => {
     },
     {
       time: "6:00 PM",
-      title: "Show & Piñata",
-      description: "¡Visita especial de Mago y romper la piñata!",
+      title: "Sopresa",
+      description: "¡Visita especial!",
       icon: "show",
     },
 
     {
       time: "7:00 PM",
-      title: "Pastel y Mañanitas",
-      description: "Cantamos el cumpleaños feliz para Mateo Sebastian.",
-      icon: "cake",
+      title: "Piñata",
+      description: "A romper esa piñata.",
+      icon: "bat",
     },
     {
-      time: "8:00 PM",
+      time: "7:30 PM",
+      title: "Sorpresa",
+      description: "¡Visita musical!",
+      icon: "dance",
+    },
+    {
+      time: "8:30 PM",
       title: "Baile",
       description: "Prepara para dar tus mejores pasos arácnidos.",
       icon: "dance",

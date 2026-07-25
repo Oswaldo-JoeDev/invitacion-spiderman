@@ -4,6 +4,7 @@ import { styled } from '@mui/material/styles';
 import { Box, Typography } from '@mui/material';
 import { FaChurch, FaFortAwesome, FaUtensils, FaStar, FaBirthdayCake, FaDoorOpen } from 'react-icons/fa';
 import { ItineraryItem } from '../../domain/entities/EventDetails';
+import { GiBaton } from 'react-icons/gi';
 
 const ItineraryCard = styled(Box)({
   border: '1px solid rgba(255, 255, 255, 0.12)',
@@ -105,6 +106,7 @@ export const ItineraryTimeline: React.FC<ItineraryTimelineProps> = ({ items, onH
       case 'castle': return <FaFortAwesome />;
       case 'food': return <FaUtensils />;
       case 'show': return <FaStar />;
+      case 'bat': return <GiBaton />;
       case 'cake': return <FaBirthdayCake />;
       case 'door': return <FaDoorOpen />;
       default: return <FaStar />;
