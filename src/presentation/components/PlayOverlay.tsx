@@ -1,5 +1,5 @@
 // src/presentation/components/PlayOverlay.tsx
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import { Button, Typography, Box } from "@mui/material";
 
@@ -15,21 +15,12 @@ const OverlayWrapper = styled(Box, {
     flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
-    transition:
-      "transform 0.8s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.5s ease",
+    transition: "opacity 0.8s ease-in-out",
     overflow: "hidden",
     padding: "20px",
-    ...(isHidden && {
-      transform: "translateY(-100%)",
+    ...((isHidden || isZippingUp) && {
       opacity: 0,
       pointerEvents: "none",
-    }),
-    ...(isZippingUp && {
-      transform: "translateY(-100%)",
-      opacity: 0.2,
-      pointerEvents: "none",
-      transition:
-        "transform 0.75s cubic-bezier(0.77, 0, 0.175, 1), opacity 0.5s ease",
     }),
   })
 );
@@ -82,7 +73,7 @@ const TextCard = styled(Box)({
   padding: "2.2rem 1.6rem",
   width: "90dvw",
   boxShadow:
-    "0 20px 45px ergba(0, 0, 0, 0.071), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+    "0 20px 45px rgba(0, 0, 0, 0.071), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
   backdropFilter: "blur(30px)",
   WebkitBackdropFilter: "blur(2px)",
   display: "flex",
@@ -114,84 +105,7 @@ const StartButton = styled(Button)({
   },
 });
 
-const SpiderSenseContainer = styled(Box, {
-  shouldForwardProp: (prop) => prop !== "isActive" && prop !== "isZippingUp",
-})<{ isActive: boolean; isZippingUp: boolean }>(
-  ({ isActive, isZippingUp }) => ({
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%, -50%) scale(0.5)",
-    zIndex: 1010,
-    pointerEvents: "none",
-    opacity: 0,
-    transition:
-      "transform 0.6s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease",
-    width: "90%",
-    maxWidth: "380px",
-    ...(isActive && {
-      opacity: 1,
-      transform: "translate(-50%, -50%) scale(1.15)",
-    }),
-    ...(isZippingUp && {
-      opacity: 0,
-      transform: "translate(-50%, -180%) scale(0.8)", // zip upwards rapidly!
-      transition:
-        "transform 0.5s cubic-bezier(0.55, 0.055, 0.675, 0.19), opacity 0.4s ease",
-    }),
-  })
-);
 
-const SpiderSenseImg = styled("img")({
-  width: "100%",
-  height: "auto",
-  display: "block",
-  imageRendering: "auto",
-});
-
-const ShockwaveRing = styled(Box, {
-  shouldForwardProp: (prop) => prop !== 'delay',
-})<{ delay: string }>(({ delay }) => ({
-  position: 'absolute',
-  top: '50%',
-  left: '50%',
-  transform: 'translate(-50%, -50%)',
-  borderRadius: '50%',
-  border: '3px solid #ff1c24',
-  pointerEvents: 'none',
-  zIndex: 1,
-  animation: 'senseRadiate 2.4s infinite cubic-bezier(0.1, 0.8, 0.3, 1)',
-  animationDelay: delay,
-  '@keyframes senseRadiate': {
-    '0%': {
-      width: '50px',
-      height: '50px',
-      opacity: 0.9,
-      borderColor: '#ffeb3b',
-      boxShadow: '0 0 20px #ffeb3b, inset 0 0 10px #ffeb3b',
-    },
-    '50%': {
-      borderColor: '#ff1c24',
-      boxShadow: '0 0 40px #ff1c24, inset 0 0 20px #ff1c24',
-    },
-    '100%': {
-      width: '800px',
-      height: '800px',
-      opacity: 0,
-      borderColor: 'rgba(255, 28, 36, 0)',
-      boxShadow: '0 0 60px rgba(255, 28, 36, 0)',
-    }
-  }
-}));
-
-const WebCanvas = styled("canvas")({
-  position: "absolute",
-  inset: 0,
-  width: "100%",
-  height: "100%",
-  zIndex: 1005,
-  pointerEvents: "none",
-});
 
 const DateSection = styled(Box)({
   textAlign: "center",
@@ -273,168 +187,30 @@ export const PlayOverlay: React.FC<PlayOverlayProps> = ({
   playThwip,
 }) => {
   const [isOverlayHidden, setIsOverlayHidden] = useState(false);
-  const [isSpideyDropped, setIsSpideyDropped] = useState(false);
-  const [isElementsHidden, setIsElementsHidden] = useState(false);
   const [isZippingUp, setIsZippingUp] = useState(false);
-  const [processedImage, setProcessedImage] = useState<string | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-
-  useEffect(() => {
-    // Process spidey sense image to remove white background
-    const img = new Image();
-    img.onload = () => {
-      const canvas = document.createElement("canvas");
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext("2d");
-      if (ctx) {
-        ctx.drawImage(img, 0, 0);
-        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const data = imgData.data;
-        for (let i = 0; i < data.length; i += 4) {
-          const r = data[i];
-          const g = data[i + 1];
-          const b = data[i + 2];
-          if (r > 220 && g > 220 && b > 220) {
-            data[i + 3] = 0; // set transparent
-          }
-        }
-        ctx.putImageData(imgData, 0, 0);
-        setProcessedImage(canvas.toDataURL());
-      }
-    };
-    img.src = "/spidersense_miles.png";
-  }, []);
-
-  useEffect(() => {
-    const handleResize = () => {
-      const canvas = canvasRef.current;
-      if (canvas) {
-        canvas.width = window.innerWidth;
-        canvas.height = window.innerHeight;
-      }
-    };
-    window.addEventListener("resize", handleResize);
-    handleResize();
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
 
   const handleStart = () => {
     playThwip();
-    setIsElementsHidden(true);
-    setIsSpideyDropped(true);
+    setIsZippingUp(true); // triggers wrapper fade-out (opacity 0)
+    onEnter(); // mounts/triggers invitation container scale pop-in immediately!
 
+    // Wait for overlay opacity transition (800ms) to complete before unmounting it
     setTimeout(() => {
-      // 1. Shoot web UPwards
-      animateWeb(() => {
-        // 2. Web hits the top! Play thwip sound and ZIP UP!
-        playThwip();
-        setIsZippingUp(true);
-
-        // 3. After zip transition completes halfway, trigger main content entrance
-        setTimeout(() => {
-          setIsOverlayHidden(true);
-          onEnter();
-        }, 350);
-      });
-    }, 700);
+      setIsOverlayHidden(true);
+    }, 800);
   };
 
-  // Draw spider web shooting straight UP to the top of the viewport
-  const animateWeb = (callback: () => void) => {
-    const canvas = canvasRef.current;
-    if (!canvas) {
-      callback();
-      return;
-    }
-    const ctx = canvas.getContext("2d");
-    if (!ctx) {
-      callback();
-      return;
-    }
-
-    const width = canvas.width;
-    const height = canvas.height;
-
-    // Shoot from the top of Miles Morales mask (centered) straight up
-    const startX = width / 2;
-    const startY = height * 0.42; //approx where Miles' hand/head is
-    const endX = width / 2;
-    const endY = 0; // top of screen
-
-    let progress = 0;
-    const duration = 220; // fast web shot (ms)
-    const startTime = performance.now();
-
-    const drawWebFrame = (time: number) => {
-      const elapsed = time - startTime;
-      progress = Math.min(elapsed / duration, 1);
-
-      ctx.clearRect(0, 0, width, height);
-
-      // Main thick web line
-      const currentY = startY + (endY - startY) * progress;
-
-      // 1. Draw thicker outer neon cyan line for glow
-      ctx.beginPath();
-      ctx.strokeStyle = "rgba(0, 240, 255, 0.45)";
-      ctx.lineWidth = 9;
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(startX, currentY);
-      ctx.stroke();
-
-      // 2. Draw thin inner white core line
-      ctx.beginPath();
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.98)";
-      ctx.lineWidth = 3;
-      ctx.moveTo(startX, startY);
-      ctx.lineTo(startX, currentY);
-      ctx.stroke();
-
-      // Draw secondary web fibers splitting off to make it look like a real spider-web shot!
-      if (progress > 0.2) {
-        ctx.beginPath();
-        ctx.strokeStyle = "rgba(255, 255, 255, 0.8)";
-        ctx.lineWidth = 1.5;
-
-        // Fiber 1 (left)
-        ctx.moveTo(startX, startY + (currentY - startY) * 0.4);
-        ctx.lineTo(startX - 15, startY + (currentY - startY) * 0.6);
-
-        // Fiber 2 (right)
-        ctx.moveTo(startX, startY + (currentY - startY) * 0.6);
-        ctx.lineTo(startX + 18, startY + (currentY - startY) * 0.85);
-
-        ctx.stroke();
-      }
-
-      if (progress < 1) {
-        requestAnimationFrame(drawWebFrame);
-      } else {
-        // Simple flashing effect at the top anchor point
-        ctx.beginPath();
-        ctx.arc(endX, endY, 15, 0, Math.PI * 2);
-        ctx.fillStyle = "#00f0ff";
-        ctx.fill();
-
-        setTimeout(callback, 120);
-      }
-    };
-
-    requestAnimationFrame(drawWebFrame);
-  };
 
   return (
     <OverlayWrapper isHidden={isOverlayHidden} isZippingUp={isZippingUp}>
       <LogoImg
         src="/spider-team.png"
         alt="Spider-Man Logo"
-        style={{ display: isElementsHidden ? "none" : "block" }}
       />
 
       <Box
         sx={{
-          display: isElementsHidden ? "none" : "flex",
+          display: "flex",
           flexDirection: "column",
           alignItems: "center",
           justifyContent: "center",
@@ -443,6 +219,7 @@ export const PlayOverlay: React.FC<PlayOverlayProps> = ({
           width: "100%",
           height: "100%",
           padding: "20px",
+          pointerEvents: isZippingUp ? "none" : "auto",
         }}
       >
         <TextCard>
@@ -461,26 +238,6 @@ export const PlayOverlay: React.FC<PlayOverlayProps> = ({
           </StartButton>
         </TextCard>
       </Box>
-
-      <WebCanvas ref={canvasRef} />
-
-      <SpiderSenseContainer
-        isActive={isSpideyDropped}
-        isZippingUp={isZippingUp}
-      >
-        {isSpideyDropped && (
-          <>
-            <ShockwaveRing delay="0s" />
-            <ShockwaveRing delay="0.8s" />
-            <ShockwaveRing delay="1.6s" />
-          </>
-        )}
-        <SpiderSenseImg
-          src={processedImage || "/spidersense_miles.png"}
-          alt="Spider-Sense Miles"
-          style={{ position: 'relative', zIndex: 2 }}
-        />
-      </SpiderSenseContainer>
     </OverlayWrapper>
   );
 };

@@ -94,13 +94,15 @@ const SeatsLabel = styled(Typography)({
   color: "#ffffff",
 });
 
-
-
 interface TicketPassProps {
   ticketsCount: number | null;
+  showChildNote: boolean;
 }
 
-export const TicketPass: React.FC<TicketPassProps> = ({ ticketsCount }) => {
+export const TicketPass: React.FC<TicketPassProps> = ({
+  ticketsCount,
+  showChildNote,
+}) => {
   if (ticketsCount === null) return null;
 
   return (
@@ -115,6 +117,24 @@ export const TicketPass: React.FC<TicketPassProps> = ({ ticketsCount }) => {
           <SeatsBox>{ticketsCount}</SeatsBox>
           <SeatsLabel>Pases Reservados</SeatsLabel>
         </TicketContent>
+        {showChildNote && (
+          <Typography
+            variant="body2"
+            sx={{
+              fontFamily: "'Space Grotesk', sans-serif",
+              fontWeight: 800,
+              color: "#ff1c24",
+              textShadow: "0 0 10px rgba(255, 28, 36, 0.5)",
+              mt: 2,
+              textAlign: "center",
+              display: "block",
+              fontSize: "0.82rem",
+              letterSpacing: "0.5px",
+            }}
+          >
+            Niños menores de 3 años no requieren boleto.
+          </Typography>
+        )}
       </TicketWrapperContainer>
     </Box>
   );

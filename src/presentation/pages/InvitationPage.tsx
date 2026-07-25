@@ -21,11 +21,15 @@ import { useAudio } from "../hooks/useAudio";
 import { UrlParameterDataSource } from "../../data/datasources/UrlParameterDataSource";
 import { AttendanceRepositoryImpl } from "../../data/repositories/AttendanceRepositoryImpl";
 import { GetTickets } from "../../domain/usecases/GetTickets";
+import { ShouldShowChildNote } from "../../domain/usecases/ShouldShowChildNote";
+import { GetKidsMenuLimit } from "../../domain/usecases/GetKidsMenuLimit";
 
 // Instantiations
 const urlDataSource = new UrlParameterDataSource();
 const attendanceRepo = new AttendanceRepositoryImpl(urlDataSource);
 const getTicketsUseCase = new GetTickets(attendanceRepo);
+const shouldShowChildNoteUseCase = new ShouldShowChildNote(attendanceRepo);
+const getKidsMenuLimitUseCase = new GetKidsMenuLimit(attendanceRepo);
 
 // Styled Components
 const LandingContainer = styled(Box, {
@@ -36,12 +40,12 @@ const LandingContainer = styled(Box, {
   padding: "0 14px 80px",
   position: "relative",
   zIndex: 5,
-  transform: "translateY(-140px)",
+  transform: "scale(0.3) rotate(-15deg)",
   opacity: 0,
   transition:
-    "transform 0.85s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.6s ease",
+    "transform 0.9s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.6s ease",
   ...(animateIn && {
-    transform: "translateY(0)",
+    transform: "scale(1) rotate(0deg)",
     opacity: 1,
   }),
 }));
@@ -420,10 +424,12 @@ export const InvitationPage: React.FC = () => {
     useAudio("/sunflower.mp3");
 
   const ticketsCount = getTicketsUseCase.execute();
+  const kidsMenuLimit = getKidsMenuLimitUseCase.execute();
 
   const [nombre, setNombre] = useState("");
   const [asistencia, setAsistencia] = useState<"Sí" | "No">("Sí");
   const [boletosSelected, setBoletosSelected] = useState<number | "">("");
+  const [kidsSelected, setKidsSelected] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
 
@@ -454,6 +460,7 @@ export const InvitationPage: React.FC = () => {
       "nombre": nombre,
       "asistencia": confirmType,
       "boletos": confirmType === "Sí" ? boletosSelected.toString() : "0",
+      "menuKids": confirmType === "Sí" ? kidsSelected.toString() : "0",
     };
 
     fetch("/", {
@@ -589,7 +596,7 @@ export const InvitationPage: React.FC = () => {
             {/* Ticket passes and RSVP verification */}
             {ticketsCount !== null ? (
               <>
-                <TicketPass ticketsCount={ticketsCount} />
+                <TicketPass ticketsCount={ticketsCount} showChildNote={shouldShowChildNoteUseCase.execute()} />
 
                 {/* RSVP Form and Success Panel */}
                 {isSubmitted ? (
@@ -662,26 +669,47 @@ export const InvitationPage: React.FC = () => {
                     </RsvpOptionsWrapper>
 
                     {asistencia === "Sí" && (
-                      <Box>
-                        <Typography variant="caption" sx={{ color: "rgba(255, 255, 255, 0.6)", mb: 0.5, display: "block", fontFamily: "'Outfit', sans-serif" }}>
-                          Número de boletos a confirmar:
-                        </Typography>
-                        <RsvpSelect 
-                          name="boletos" 
-                          value={boletosSelected} 
-                          onChange={(e) => setBoletosSelected(e.target.value === "" ? "" : parseInt(e.target.value, 10))}
-                          required
-                        >
-                          <option value="" style={{ backgroundColor: "#070709" }}>
-                            -- Seleccionar cantidad --
-                          </option>
-                          {/* Generate options up to ticketsCount (limit), or default to 5 if ticketsCount is not set */}
-                          {Array.from({ length: ticketsCount || 5 }, (_, i) => i + 1).map((num) => (
-                            <option key={num} value={num} style={{ backgroundColor: "#070709" }}>
-                              {num} {num === 1 ? "boleto" : "boletos"}
+                      <Box sx={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                        <Box>
+                          <Typography variant="caption" sx={{ color: "rgba(255, 255, 255, 0.6)", mb: 0.5, display: "block", fontFamily: "'Outfit', sans-serif" }}>
+                            Número de boletos a confirmar:
+                          </Typography>
+                          <RsvpSelect 
+                            name="boletos" 
+                            value={boletosSelected} 
+                            onChange={(e) => setBoletosSelected(e.target.value === "" ? "" : parseInt(e.target.value, 10))}
+                            required
+                          >
+                            <option value="" style={{ backgroundColor: "#070709" }}>
+                              -- Seleccionar cantidad --
                             </option>
-                          ))}
-                        </RsvpSelect>
+                            {/* Generate options up to ticketsCount (limit), or default to 5 if ticketsCount is not set */}
+                            {Array.from({ length: ticketsCount || 5 }, (_, i) => i + 1).map((num) => (
+                              <option key={num} value={num} style={{ backgroundColor: "#070709" }}>
+                                {num} {num === 1 ? "boleto" : "boletos"}
+                              </option>
+                            ))}
+                          </RsvpSelect>
+                        </Box>
+
+                        {kidsMenuLimit !== null && kidsMenuLimit > 0 && (
+                          <Box>
+                            <Typography variant="caption" sx={{ color: "rgba(255, 255, 255, 0.6)", mb: 0.5, display: "block", fontFamily: "'Outfit', sans-serif" }}>
+                              Tendremos Menú kids (Hamburguesas con papas):
+                            </Typography>
+                            <RsvpSelect 
+                              name="menuKids" 
+                              value={kidsSelected} 
+                              onChange={(e) => setKidsSelected(parseInt(e.target.value, 10))}
+                            >
+                              {Array.from({ length: kidsMenuLimit + 1 }, (_, i) => (
+                                <option key={i} value={i} style={{ backgroundColor: "#070709" }}>
+                                  {i === 0 ? "Ninguno" : `${i} ${i === 1 ? "pequeño arácnido" : "pequeños arácnidos"}`}
+                                </option>
+                              ))}
+                            </RsvpSelect>
+                          </Box>
+                        )}
                       </Box>
                     )}
 
@@ -762,6 +790,16 @@ export const InvitationPage: React.FC = () => {
                 <Typography variant="body2" sx={{ color: '#00f0ff', fontWeight: 700, fontFamily: "'Outfit', sans-serif" }}>
                   {boletosSelected} {boletosSelected === 1 ? "boleto" : "boletos"}
                 </Typography>
+                {kidsMenuLimit !== null && kidsMenuLimit > 0 && (
+                  <>
+                    <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.5)', display: 'block', mt: 1, fontFamily: "'Outfit', sans-serif" }}>
+                      Menús infantiles:
+                    </Typography>
+                    <Typography variant="body2" sx={{ color: '#ff1c24', fontWeight: 700, fontFamily: "'Outfit', sans-serif" }}>
+                      {kidsSelected} {kidsSelected === 1 ? "menú" : "menús"}
+                    </Typography>
+                  </>
+                )}
               </Box>
             </Box>
           ) : (

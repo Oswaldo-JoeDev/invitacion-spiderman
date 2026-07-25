@@ -16,10 +16,10 @@ export class AttendanceRepositoryImpl implements AttendanceRepository {
 
     const passStr = this.urlParameterDataSource.getParam('pass');
     if (passStr) {
-      // 1. Matches themed M<number> format (e.g., M2, M3)
-      const themedMatch = passStr.match(/^M(\d+)$/i);
+      // 1. Matches themed M<number> or NM<number> format (e.g. M2, NM4, nm3)
+      const themedMatch = passStr.match(/^(N)?M(\d+)$/i);
       if (themedMatch) {
-        const count = parseInt(themedMatch[1], 10);
+        const count = parseInt(themedMatch[2], 10);
         if (!isNaN(count) && count > 0) return count;
       }
 
@@ -54,5 +54,23 @@ export class AttendanceRepositoryImpl implements AttendanceRepository {
     }
 
     return `https://wa.me/${this.phoneNumber}?text=${encodeURIComponent(message)}`;
+  }
+
+  shouldShowChildNote(): boolean {
+    const passStr = this.urlParameterDataSource.getParam('pass');
+    if (passStr) {
+      // Return true if it matches NM<number> (case-insensitive)
+      return /^NM\d+$/i.test(passStr);
+    }
+    return false;
+  }
+
+  getKidsMenuLimit(): number | null {
+    const kidsStr = this.urlParameterDataSource.getParam('kids');
+    if (kidsStr) {
+      const count = parseInt(kidsStr, 10);
+      if (!isNaN(count) && count >= 0) return count;
+    }
+    return null;
   }
 }
