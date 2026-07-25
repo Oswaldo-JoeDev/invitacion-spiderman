@@ -38,34 +38,6 @@ const LogoImg = styled("img")({
   pointerEvents: "none",
 });
 
-const GlitchTitle = styled(Typography)({
-  fontFamily: "'Space Grotesk', sans-serif",
-  color: "#ffffff",
-  fontSize: "1.3rem",
-  fontWeight: 800,
-  textTransform: "uppercase",
-  textAlign: "center",
-  margin: "1rem 0 0.5rem",
-  position: "relative",
-  letterSpacing: "-0.5px",
-  maxWidth: "320px",
-  textShadow: "-2px -2px 0 #00f0ff, 2px 2px 0 #ff007f",
-  animation: "textGlitch 4s infinite alternate",
-  "@keyframes textGlitch": {
-    "0%, 100%": { textShadow: "-2px -2px 0 #00f0ff, 2px 2px 0 #ff007f" },
-    "40%": { textShadow: "-2px -2px 0 #00f0ff, 2px 2px 0 #ff007f" },
-    "42%": {
-      textShadow: "3px -1px 0 #00f0ff, -3px 2px 0 #ff007f",
-      transform: "skewX(-5deg)",
-    },
-    "44%": {
-      textShadow: "-2px -2px 0 #00f0ff, 2px 2px 0 #ff007f",
-      transform: "skewX(0)",
-    },
-    "75%": { textShadow: "-3px 2px 0 #00f0ff, 3px -2px 0 #ff007f" },
-  },
-});
-
 const TextCard = styled(Box)({
   backgroundColor: "rgba(68, 68, 70, 0.103)",
   border: "1px solid rgba(255, 255, 255, 0.046)",
