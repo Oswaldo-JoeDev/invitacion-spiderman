@@ -793,10 +793,10 @@ export const InvitationPage: React.FC = () => {
                 {kidsMenuLimit !== null && kidsMenuLimit > 0 && (
                   <>
                     <Typography variant="caption" sx={{ color: 'rgba(255, 255, 255, 0.5)', display: 'block', mt: 1, fontFamily: "'Outfit', sans-serif" }}>
-                      Menús infantiles:
+                      Cantidad de Menús kids:
                     </Typography>
                     <Typography variant="body2" sx={{ color: '#ff1c24', fontWeight: 700, fontFamily: "'Outfit', sans-serif" }}>
-                      {kidsSelected} {kidsSelected === 1 ? "menú" : "menús"}
+                      {kidsSelected}
                     </Typography>
                   </>
                 )}
