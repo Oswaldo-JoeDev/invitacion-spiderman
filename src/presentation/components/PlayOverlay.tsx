@@ -146,6 +146,7 @@ const TitleInv = styled(Typography)({
   letterSpacing: "1px",
   marginTop: "4px",
   display: "block",
+  textAlign: "center",
 });
 
 const MateoNameImg = styled("img")({
