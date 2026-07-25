@@ -22,7 +22,7 @@ const OverlayWrapper = styled(Box, {
       opacity: 0,
       pointerEvents: "none",
     }),
-  })
+  }),
 );
 
 const LogoImg = styled("img")({
@@ -67,14 +67,14 @@ const GlitchTitle = styled(Typography)({
 });
 
 const TextCard = styled(Box)({
-  backgroundColor: "rgba(16, 16, 22, 0.103)",
+  backgroundColor: "rgba(68, 68, 70, 0.103)",
   border: "1px solid rgba(255, 255, 255, 0.046)",
   borderRadius: "24px",
   padding: "2.2rem 1.6rem",
   width: "90dvw",
   boxShadow:
     "0 20px 45px rgba(0, 0, 0, 0.071), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
-  backdropFilter: "blur(30px)",
+  backdropFilter: "blur(6px)",
   WebkitBackdropFilter: "blur(2px)",
   display: "flex",
   flexDirection: "column",
@@ -94,7 +94,7 @@ const StartButton = styled(Button)({
   boxShadow: "0 0 12px #ff1c2466",
   transition: "all 0.25s ease",
   zIndex: 1020,
-  animation: "dateNumberGlitch 4s infinite alternate ease-in-out",
+  // animation: "dateNumberGlitch 4s infinite alternate ease-in-out",
 
   "&:hover": {
     transform: "scale(1.02)",
@@ -104,8 +104,6 @@ const StartButton = styled(Button)({
     backgroundColor: "#000000",
   },
 });
-
-
 
 const DateSection = styled(Box)({
   textAlign: "center",
@@ -167,6 +165,17 @@ const DateMonth = styled(Typography)({
   animation: "dateNumberGlitch 4s infinite alternate ease-in-out",
 });
 
+const TitleInv = styled(Typography)({
+  fontSize: "1.5rem",
+  fontWeight: 400,
+  textTransform: "uppercase",
+  color: "#ffffff",
+  fontFamily: "'Permanent Marker', cursive",
+  letterSpacing: "1px",
+  marginTop: "4px",
+  display: "block",
+});
+
 const MateoNameImg = styled("img")({
   width: "100%",
   maxWidth: "280px",
@@ -200,13 +209,9 @@ export const PlayOverlay: React.FC<PlayOverlayProps> = ({
     }, 800);
   };
 
-
   return (
     <OverlayWrapper isHidden={isOverlayHidden} isZippingUp={isZippingUp}>
-      <LogoImg
-        src="/spider-team.png"
-        alt="Spider-Man Logo"
-      />
+      <LogoImg src="/spider-team.png" alt="Spider-Man Logo" />
 
       <Box
         sx={{
@@ -223,9 +228,7 @@ export const PlayOverlay: React.FC<PlayOverlayProps> = ({
         }}
       >
         <TextCard>
-          <GlitchTitle data-text="¡ESTÁS INVITADO A MI FIESTA ARÁCNIDA!">
-            ¡ESTÁS INVITADO A MI FIESTA ARÁCNIDA!
-          </GlitchTitle>
+          <TitleInv>¡ESTÁS INVITADO A MI FIESTA ARÁCNIDA!</TitleInv>
 
           <DateSection>
             <MateoNameImg src="/mateo_name.png" alt="Mateo Sebastian Name" />
