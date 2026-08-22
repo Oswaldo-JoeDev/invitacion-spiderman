@@ -10,11 +10,11 @@ const ItineraryCard = styled(Box)({
   border: '1px solid rgba(255, 255, 255, 0.12)',
   borderRadius: '24px',
   padding: '1.8rem 1.25rem',
-  backgroundColor: 'rgba(16, 16, 22, 0.45)',
+  backgroundColor: 'rgba(16, 16, 22, 0.18)',
   boxShadow: '0 20px 45px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
   marginBottom: '20px',
-  backdropFilter: 'blur(30px) saturate(130%)',
-  WebkitBackdropFilter: 'blur(30px) saturate(130%)',
+  backdropFilter: 'blur(6px) saturate(130%)',
+  WebkitBackdropFilter: 'blur(6px) saturate(130%)',
 });
 
 const ItineraryTitle = styled(Typography)({

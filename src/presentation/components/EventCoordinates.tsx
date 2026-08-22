@@ -25,13 +25,13 @@ const DetailCard = styled(Box)({
   border: '1px solid rgba(255, 255, 255, 0.12)',
   borderRadius: '20px',
   padding: '1.4rem',
-  backgroundColor: 'rgba(16, 16, 22, 0.45)',
+  backgroundColor: 'rgba(16, 16, 22, 0.18)',
   boxShadow: '0 20px 45px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
   transition: 'all 0.3s ease',
   display: 'flex',
   flexDirection: 'column',
-  backdropFilter: 'blur(30px) saturate(130%)',
-  WebkitBackdropFilter: 'blur(30px) saturate(130%)',
+  backdropFilter: 'blur(6px) saturate(130%)',
+  WebkitBackdropFilter: 'blur(6px) saturate(130%)',
   '&:hover': {
     borderColor: 'rgba(255, 28, 36, 0.35)',
     boxShadow: '0 0 20px rgba(255, 28, 36, 0.1)',
@@ -49,6 +49,20 @@ const PinIconImg = styled('img')({
   width: '30px',
   height: 'auto',
   display: 'block',
+  transition: 'transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)',
+  animation: 'pinFloat 2.5s infinite ease-in-out',
+  '@keyframes pinFloat': {
+    '0%, 100%': {
+      transform: 'translateY(0) scale(1)',
+    },
+    '50%': {
+      transform: 'translateY(-6px) scale(1.05)',
+    },
+  },
+  '&:hover': {
+    animationPlayState: 'paused',
+    transform: 'scale(1.25) rotate(15deg) translateY(-8px)',
+  },
 });
 
 const TimeText = styled(Typography)(({ theme }) => ({

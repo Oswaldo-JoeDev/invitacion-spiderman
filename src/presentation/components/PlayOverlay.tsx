@@ -39,7 +39,7 @@ const LogoImg = styled("img")({
 });
 
 const TextCard = styled(Box)({
-  backgroundColor: "rgba(68, 68, 70, 0.103)",
+  backgroundColor: "#4444461a",
   border: "1px solid rgba(255, 255, 255, 0.046)",
   borderRadius: "24px",
   padding: "2.2rem 1.6rem",

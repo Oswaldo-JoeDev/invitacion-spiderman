@@ -9,11 +9,11 @@ const CountdownBox = styled(Box)({
   borderRadius: '20px',
   padding: '1.2rem',
   marginBottom: '20px',
-  backgroundColor: 'rgba(16, 16, 22, 0.72)',
+  backgroundColor: 'rgba(16, 16, 22, 0.18)',
   boxShadow: '0 20px 45px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
   textAlign: 'center',
-  backdropFilter: 'blur(24px) saturate(120%)',
-  WebkitBackdropFilter: 'blur(24px) saturate(120%)',
+  backdropFilter: 'blur(6px) saturate(120%)',
+  WebkitBackdropFilter: 'blur(6px) saturate(120%)',
 });
 
 const HeaderText = styled(Typography)(({ theme }) => ({

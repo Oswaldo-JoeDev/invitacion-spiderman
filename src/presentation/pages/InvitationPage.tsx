@@ -13,6 +13,7 @@ import { ItineraryTimeline } from "../components/ItineraryTimeline";
 import { TicketPass } from "../components/TicketPass";
 import { AudioController } from "../components/AudioController";
 import { BackgroundParticles } from "../components/BackgroundParticles";
+import { ScrollReveal } from "../components/ScrollReveal";
 
 // Hooks
 import { useAudio } from "../hooks/useAudio";
@@ -54,10 +55,10 @@ const RsvpFormContainer = styled('form')({
   border: '1px solid rgba(255, 255, 255, 0.12)',
   borderRadius: '24px',
   padding: '1.8rem 1.4rem',
-  backgroundColor: 'rgba(16, 16, 22, 0.45)',
+  backgroundColor: 'rgba(16, 16, 22, 0.18)',
   boxShadow: '0 20px 45px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-  backdropFilter: 'blur(30px) saturate(130%)',
-  WebkitBackdropFilter: 'blur(30px) saturate(130%)',
+  backdropFilter: 'blur(6px) saturate(130%)',
+  WebkitBackdropFilter: 'blur(6px) saturate(130%)',
   width: '100%',
   marginTop: '25px',
   display: 'flex',
@@ -195,10 +196,10 @@ const SuccessContainer = styled(Box)({
   border: '1px solid rgba(0, 240, 255, 0.4)',
   borderRadius: '24px',
   padding: '2.2rem 1.4rem',
-  backgroundColor: 'rgba(10, 25, 30, 0.55)',
+  backgroundColor: 'rgba(10, 25, 30, 0.18)',
   boxShadow: '0 20px 45px rgba(0, 0, 0, 0.65), 0 0 15px rgba(0, 240, 255, 0.15)',
-  backdropFilter: 'blur(30px) saturate(130%)',
-  WebkitBackdropFilter: 'blur(30px) saturate(130%)',
+  backdropFilter: 'blur(6px) saturate(130%)',
+  WebkitBackdropFilter: 'blur(6px) saturate(130%)',
   width: '100%',
   marginTop: '25px',
   textAlign: 'center',
@@ -573,187 +574,201 @@ export const InvitationPage: React.FC = () => {
           <LandingContainer animateIn={animateIn}>
             <HeroBanner />
 
-            <SeparatorLine />
+            <ScrollReveal>
+              <SeparatorLine />
+              <DateSection>
+                <DateNumber>5</DateNumber>
+                <DateMonth>Diciembre</DateMonth>
+              </DateSection>
+              <SeparatorLine />
+            </ScrollReveal>
 
-            <DateSection>
-              <DateNumber>5</DateNumber>
-              <DateMonth>Diciembre</DateMonth>
-            </DateSection>
+            <ScrollReveal>
+              {/* Countdown timer */}
+              <CountdownTimer targetDate="Dec 5, 2026 15:15:00" />
+            </ScrollReveal>
 
-            <SeparatorLine />
+            <ScrollReveal>
+              <PinSeparatorContainer>
+                <PinSeparatorImg src="/pin-miles.png" alt="Miles Morales Pin" />
+              </PinSeparatorContainer>
+            </ScrollReveal>
 
-            {/* Countdown timer */}
-            <CountdownTimer targetDate="Dec 5, 2026 15:15:00" />
+            <ScrollReveal>
+              {/* Details (Misa & Recepcion) */}
+              <EventCoordinates
+                misa={misaDetail}
+                recepcion={recepcionDetail}
+                onHover={playHoverClick}
+              />
+            </ScrollReveal>
 
-            <PinSeparatorContainer>
-              <PinSeparatorImg src="/pin-miles.png" alt="Miles Morales Pin" />
-            </PinSeparatorContainer>
-
-            {/* Details (Misa & Recepcion) */}
-            <EventCoordinates
-              misa={misaDetail}
-              recepcion={recepcionDetail}
-              onHover={playHoverClick}
-            />
-
-            {/* Itinerary */}
-            <ItineraryTimeline items={itineraryData} onHover={playHoverClick} />
+            <ScrollReveal>
+              {/* Itinerary */}
+              <ItineraryTimeline items={itineraryData} onHover={playHoverClick} />
+            </ScrollReveal>
 
             {/* Ticket passes and RSVP verification */}
             {ticketsCount !== null ? (
               <>
-                <TicketPass ticketsCount={ticketsCount} showChildNote={shouldShowChildNoteUseCase.execute()} />
+                <ScrollReveal>
+                  <TicketPass ticketsCount={ticketsCount} showChildNote={shouldShowChildNoteUseCase.execute()} />
+                </ScrollReveal>
 
                 {/* RSVP Form and Success Panel */}
-                {isSubmitted ? (
-                  <SuccessContainer style={{ borderColor: asistencia === "Sí" ? "rgba(0, 240, 255, 0.4)" : "rgba(255, 28, 36, 0.4)" }}>
-                    {asistencia === "Sí" ? (
-                      <>
-                        <FaCheckCircle style={{ fontSize: "3rem", color: "#00f0ff", marginBottom: "12px" }} />
-                        <Typography variant="h6" sx={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, color: "#00f0ff", mb: 1 }}>
-                          ¡ASISTENCIA REGISTRADA!
-                        </Typography>
-                        <Typography variant="body2" sx={{ fontFamily: "'Outfit', sans-serif", color: "rgba(255, 255, 255, 0.8)", px: 1 }}>
-                          Tu portal de acceso al multiverso ha sido asegurado. ¡Nos vemos en la fiesta! 🕸️⚡
-                        </Typography>
-                      </>
-                    ) : (
-                      <>
-                        <FaTimesCircle style={{ fontSize: "3rem", color: "#ff1c24", marginBottom: "12px" }} />
-                        <Typography variant="h6" sx={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, color: "#ff1c24", mb: 1 }}>
-                          INASISTENCIA REGISTRADA
-                        </Typography>
-                        <Typography variant="body2" sx={{ fontFamily: "'Outfit', sans-serif", color: "rgba(255, 255, 255, 0.8)", px: 1, lineHeight: 1.6 }}>
-                          Lamentamos que no nos puedas acompañar en esta fecha, será para la próxima. ¡Saludos! 🕸️
-                        </Typography>
-                      </>
-                    )}
-                  </SuccessContainer>
-                ) : (
-                  <RsvpFormContainer name="rsvp" onSubmit={handleFormSubmit} data-netlify="true" data-netlify-honeypot="bot-field">
-                    {/* Honeypot field for netlify spambots */}
-                    <input type="hidden" name="form-name" value="rsvp" />
-                    <p style={{ display: 'none' }}>
-                      <label>Don't fill this out if you're human: <input name="bot-field" /></label>
-                    </p>
-
-                    <RsvpTitle>Confirmar Asistencia</RsvpTitle>
-
-                    {/* Dynamic ticket count status badge */}
-                    <Box sx={{ textAlign: 'center', my: 0.5 }}>
-                      <Typography variant="body2" sx={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, color: '#ff1c24', textShadow: '0 0 8px rgba(255, 28, 36, 0.35)', letterSpacing: '0.5px' }}>
-                        {asistencia === "Sí" ? (
-                          `Boletos a confirmar: ${boletosSelected || "--"} de ${ticketsCount} autorizados`
-                        ) : (
-                          `Boletos a liberar: ${ticketsCount} espacios`
-                        )}
-                      </Typography>
-                    </Box>
-                    
-                    <RsvpInput 
-                      type="text" 
-                      name="nombre" 
-                      placeholder="Nombre de la familia o invitados" 
-                      value={nombre}
-                      onChange={(e) => setNombre(e.target.value)}
-                      required 
-                    />
-
-                    <RsvpOptionsWrapper>
-                      <RsvpOptionButton 
-                        isSelected={asistencia === "Sí"} 
-                        onClick={() => { playHoverClick(); setAsistencia("Sí"); }}
-                      >
-                        <FaCheckCircle /> Sí asistiré
-                      </RsvpOptionButton>
-                      <RsvpOptionButton 
-                        isSelected={asistencia === "No"} 
-                        onClick={() => { playHoverClick(); setAsistencia("No"); }}
-                      >
-                        <FaTimesCircle /> No podré ir
-                      </RsvpOptionButton>
-                    </RsvpOptionsWrapper>
-
-                    {asistencia === "Sí" && (
-                      <Box sx={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                        <Box>
-                          <Typography variant="caption" sx={{ color: "rgba(255, 255, 255, 0.6)", mb: 0.5, display: "block", fontFamily: "'Outfit', sans-serif" }}>
-                            Número de boletos a confirmar:
+                <ScrollReveal>
+                  {isSubmitted ? (
+                    <SuccessContainer style={{ borderColor: asistencia === "Sí" ? "rgba(0, 240, 255, 0.4)" : "rgba(255, 28, 36, 0.4)" }}>
+                      {asistencia === "Sí" ? (
+                        <>
+                          <FaCheckCircle style={{ fontSize: "3rem", color: "#00f0ff", marginBottom: "12px" }} />
+                          <Typography variant="h6" sx={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, color: "#00f0ff", mb: 1 }}>
+                            ¡ASISTENCIA REGISTRADA!
                           </Typography>
-                          <RsvpSelect 
-                            name="boletos" 
-                            value={boletosSelected} 
-                            onChange={(e) => setBoletosSelected(e.target.value === "" ? "" : parseInt(e.target.value, 10))}
-                            required
-                          >
-                            <option value="" style={{ backgroundColor: "#070709" }}>
-                              -- Seleccionar cantidad --
-                            </option>
-                            {/* Generate options up to ticketsCount (limit), or default to 5 if ticketsCount is not set */}
-                            {Array.from({ length: ticketsCount || 5 }, (_, i) => i + 1).map((num) => (
-                              <option key={num} value={num} style={{ backgroundColor: "#070709" }}>
-                                {num} {num === 1 ? "boleto" : "boletos"}
-                              </option>
-                            ))}
-                          </RsvpSelect>
-                        </Box>
+                          <Typography variant="body2" sx={{ fontFamily: "'Outfit', sans-serif", color: "rgba(255, 255, 255, 0.8)", px: 1 }}>
+                            Tu portal de acceso al multiverso ha sido asegurado. ¡Nos vemos en la fiesta! 🕸️⚡
+                          </Typography>
+                        </>
+                      ) : (
+                        <>
+                          <FaTimesCircle style={{ fontSize: "3rem", color: "#ff1c24", marginBottom: "12px" }} />
+                          <Typography variant="h6" sx={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 800, color: "#ff1c24", mb: 1 }}>
+                            INASISTENCIA REGISTRADA
+                          </Typography>
+                          <Typography variant="body2" sx={{ fontFamily: "'Outfit', sans-serif", color: "rgba(255, 255, 255, 0.8)", px: 1, lineHeight: 1.6 }}>
+                            Lamentamos que no nos puedas acompañar en esta fecha, será para la próxima. ¡Saludos! 🕸️
+                          </Typography>
+                        </>
+                      )}
+                    </SuccessContainer>
+                  ) : (
+                    <RsvpFormContainer name="rsvp" onSubmit={handleFormSubmit} data-netlify="true" data-netlify-honeypot="bot-field">
+                      {/* Honeypot field for netlify spambots */}
+                      <input type="hidden" name="form-name" value="rsvp" />
+                      <p style={{ display: 'none' }}>
+                        <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+                      </p>
 
-                        {kidsMenuLimit !== null && kidsMenuLimit > 0 && (
+                      <RsvpTitle>Confirmar Asistencia</RsvpTitle>
+
+                      {/* Dynamic ticket count status badge */}
+                      <Box sx={{ textAlign: 'center', my: 0.5 }}>
+                        <Typography variant="body2" sx={{ fontFamily: "'Space Grotesk', sans-serif", fontWeight: 700, color: '#ff1c24', textShadow: '0 0 8px rgba(255, 28, 36, 0.35)', letterSpacing: '0.5px' }}>
+                          {asistencia === "Sí" ? (
+                            `Boletos a confirmar: ${boletosSelected || "--"} de ${ticketsCount} autorizados`
+                          ) : (
+                            `Boletos a liberar: ${ticketsCount} espacios`
+                          )}
+                        </Typography>
+                      </Box>
+                      
+                      <RsvpInput 
+                        type="text" 
+                        name="nombre" 
+                        placeholder="Nombre de la familia o invitados" 
+                        value={nombre}
+                        onChange={(e) => setNombre(e.target.value)}
+                        required 
+                      />
+
+                      <RsvpOptionsWrapper>
+                        <RsvpOptionButton 
+                          isSelected={asistencia === "Sí"} 
+                          onClick={() => { playHoverClick(); setAsistencia("Sí"); }}
+                        >
+                          <FaCheckCircle /> Sí asistiré
+                        </RsvpOptionButton>
+                        <RsvpOptionButton 
+                          isSelected={asistencia === "No"} 
+                          onClick={() => { playHoverClick(); setAsistencia("No"); }}
+                        >
+                          <FaTimesCircle /> No podré ir
+                        </RsvpOptionButton>
+                      </RsvpOptionsWrapper>
+
+                      {asistencia === "Sí" && (
+                        <Box sx={{ display: "flex", flexDirection: "column", gap: "16px" }}>
                           <Box>
                             <Typography variant="caption" sx={{ color: "rgba(255, 255, 255, 0.6)", mb: 0.5, display: "block", fontFamily: "'Outfit', sans-serif" }}>
-                              Tendremos Menú kids (Hamburguesas con papas):
+                              Número de boletos a confirmar:
                             </Typography>
                             <RsvpSelect 
-                              name="menuKids" 
-                              value={kidsSelected} 
-                              onChange={(e) => setKidsSelected(parseInt(e.target.value, 10))}
+                              name="boletos" 
+                              value={boletosSelected} 
+                              onChange={(e) => setBoletosSelected(e.target.value === "" ? "" : parseInt(e.target.value, 10))}
+                              required
                             >
-                              {Array.from({ length: kidsMenuLimit + 1 }, (_, i) => (
-                                <option key={i} value={i} style={{ backgroundColor: "#070709" }}>
-                                  {i === 0 ? "Ninguno" : `${i} ${i === 1 ? "pequeño arácnido" : "pequeños arácnidos"}`}
+                              <option value="" style={{ backgroundColor: "#070709" }}>
+                                -- Seleccionar cantidad --
+                              </option>
+                              {/* Generate options up to ticketsCount (limit), or default to 5 if ticketsCount is not set */}
+                              {Array.from({ length: ticketsCount || 5 }, (_, i) => i + 1).map((num) => (
+                                <option key={num} value={num} style={{ backgroundColor: "#070709" }}>
+                                  {num} {num === 1 ? "boleto" : "boletos"}
                                 </option>
                               ))}
                             </RsvpSelect>
                           </Box>
-                        )}
-                      </Box>
-                    )}
 
-                    <RsvpSubmitButton type="submit" disabled={isSubmitting || !nombre.trim() || (asistencia === "Sí" && !boletosSelected)}>
-                      {isSubmitting ? "Enviando señal..." : (
-                        asistencia === "Sí" ? (
-                          <>
-                            <FaPaperPlane /> Confirmar Asistencia
-                          </>
-                        ) : (
-                          <>
-                            <FaPaperPlane /> Confirmar inasistencia
-                          </>
-                        )
+                          {kidsMenuLimit !== null && kidsMenuLimit > 0 && (
+                            <Box>
+                              <Typography variant="caption" sx={{ color: "rgba(255, 255, 255, 0.6)", mb: 0.5, display: "block", fontFamily: "'Outfit', sans-serif" }}>
+                                Tendremos Menú kids (Hamburguesas con papas):
+                              </Typography>
+                              <RsvpSelect 
+                                name="menuKids" 
+                                value={kidsSelected} 
+                                onChange={(e) => setKidsSelected(parseInt(e.target.value, 10))}
+                              >
+                                {Array.from({ length: kidsMenuLimit + 1 }, (_, i) => (
+                                  <option key={i} value={i} style={{ backgroundColor: "#070709" }}>
+                                    {i === 0 ? "Ninguno" : `${i} ${i === 1 ? "pequeño arácnido" : "pequeños arácnidos"}`}
+                                  </option>
+                                ))}
+                              </RsvpSelect>
+                            </Box>
+                          )}
+                        </Box>
                       )}
-                    </RsvpSubmitButton>
-                  </RsvpFormContainer>
-                )}
+
+                      <RsvpSubmitButton type="submit" disabled={isSubmitting || !nombre.trim() || (asistencia === "Sí" && !boletosSelected)}>
+                        {isSubmitting ? "Enviando señal..." : (
+                          asistencia === "Sí" ? (
+                            <>
+                              <FaPaperPlane /> Confirmar Asistencia
+                            </>
+                          ) : (
+                            <>
+                              <FaPaperPlane /> Confirmar inasistencia
+                            </>
+                          )
+                        )}
+                      </RsvpSubmitButton>
+                    </RsvpFormContainer>
+                  )}
+                </ScrollReveal>
               </>
             ) : (
               /* Contact Us alert if ticketsCount is not provided in URL */
-              <RsvpFormContainer style={{ borderColor: 'rgba(255, 28, 36, 0.45)' }}>
-                <FaTimesCircle style={{ fontSize: "3rem", color: "#ff1c24", marginBottom: "12px", alignSelf: 'center' }} />
-                <RsvpTitle style={{ color: '#ff1c24' }}>Pase no verificado</RsvpTitle>
-                <Typography variant="body2" sx={{ fontFamily: "'Outfit', sans-serif", color: "rgba(255, 255, 255, 0.85)", textAlign: 'center', lineHeight: 1.6, px: 1 }}>
-                  No hemos detectado la cantidad de pases asignados en este enlace. Por favor, contáctanos directamente para verificar tus boletos y confirmar tu asistencia. 🕸️
-                </Typography>
-                <RsvpSubmitButton 
-                  type="button"
-                  onClick={() => {
-                    playThwip();
-                    window.open("https://wa.me/525565235192?text=" + encodeURIComponent("¡Hola! Tengo una duda con mis boletos para la fiesta de Mateo Sebastian."), "_blank");
-                  }}
-                  style={{ marginTop: '10px' }}
-                >
-                  <FaComment /> Contactar por WhatsApp
-                </RsvpSubmitButton>
-              </RsvpFormContainer>
+              <ScrollReveal>
+                <RsvpFormContainer style={{ borderColor: 'rgba(255, 28, 36, 0.45)' }}>
+                  <FaTimesCircle style={{ fontSize: "3rem", color: "#ff1c24", marginBottom: "12px", alignSelf: 'center' }} />
+                  <RsvpTitle style={{ color: '#ff1c24' }}>Pase no verificado</RsvpTitle>
+                  <Typography variant="body2" sx={{ fontFamily: "'Outfit', sans-serif", color: "rgba(255, 255, 255, 0.85)", textAlign: 'center', lineHeight: 1.6, px: 1 }}>
+                    No hemos detectado la cantidad de pases asignados en este enlace. Por favor, contáctanos directamente para verificar tus boletos y confirmar tu asistencia. 🕸️
+                  </Typography>
+                  <RsvpSubmitButton 
+                    type="button"
+                    onClick={() => {
+                      playThwip();
+                      window.open("https://wa.me/525565235192?text=" + encodeURIComponent("¡Hola! Tengo una duda con mis boletos para la fiesta de Mateo Sebastian."), "_blank");
+                    }}
+                    style={{ marginTop: '10px' }}
+                  >
+                    <FaComment /> Contactar por WhatsApp
+                  </RsvpSubmitButton>
+                </RsvpFormContainer>
+              </ScrollReveal>
             )}
 
             {/* Footer */}

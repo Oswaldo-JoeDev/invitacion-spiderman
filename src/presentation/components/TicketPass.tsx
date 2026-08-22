@@ -16,7 +16,7 @@ const TicketWrapperContainer = styled(Box)({
   border: "1px solid rgba(255, 255, 255, 0.12)",
   borderRadius: "20px",
   padding: "1.6rem 1.25rem",
-  backgroundColor: "rgba(16, 16, 22, 0.45)",
+  backgroundColor: "rgba(16, 16, 22, 0.18)",
   boxShadow:
     "0 20px 45px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
   marginBottom: "20px",
@@ -24,8 +24,8 @@ const TicketWrapperContainer = styled(Box)({
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  backdropFilter: "blur(30px) saturate(130%)",
-  WebkitBackdropFilter: "blur(30px) saturate(130%)",
+  backdropFilter: "blur(6px) saturate(130%)",
+  WebkitBackdropFilter: "blur(6px) saturate(130%)",
   "&::before, &::after": {
     content: "''",
     position: "absolute",

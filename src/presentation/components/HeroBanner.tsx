@@ -6,13 +6,13 @@ import { Box, Typography, CircularProgress } from "@mui/material";
 const BannerCard = styled(Box)({
   border: '1px solid rgba(255, 255, 255, 0.12)',
   borderRadius: '28px',
-  backgroundColor: 'rgba(16, 16, 22, 0.45)',
+  backgroundColor: 'rgba(16, 16, 22, 0.18)',
   margin: '20px 0',
   overflow: 'hidden',
   boxShadow: '0 20px 45px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
   position: 'relative',
-  backdropFilter: 'blur(30px) saturate(130%)',
-  WebkitBackdropFilter: 'blur(30px) saturate(130%)',
+  backdropFilter: 'blur(6px) saturate(130%)',
+  WebkitBackdropFilter: 'blur(6px) saturate(130%)',
 });
 
 const ImageContainer = styled(Box)({
