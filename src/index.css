@@ -2,6 +2,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Permanent+Marker&family=Sedgwick+Ave+Display&family=Space+Grotesk:wght@500;700;800&family=Bebas+Neue&display=swap');
 
 /* Global styles */
+html {
+  overflow-x: hidden;
+  /* Prevents iOS Safari from auto-zooming on content wider than viewport */
+  -webkit-text-size-adjust: 100%;
+}
+
 body {
   margin: 0;
   padding: 0;
@@ -9,7 +15,14 @@ body {
   color: #ffffff;
   font-family: 'Outfit', sans-serif;
   overflow-x: hidden;
+  /* Use fill-available for correct viewport height on iOS (avoids 100vh zoom issue) */
   min-height: 100vh;
+  min-height: -webkit-fill-available;
+}
+
+/* Prevent unexpected overflow from box-sizing issues */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 /* Halftone Comic dot background overlay */

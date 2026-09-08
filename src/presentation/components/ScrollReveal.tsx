@@ -24,32 +24,38 @@ export const ScrollReveal: React.FC<ScrollRevealProps> = ({ children }) => {
   const domRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
+    const el = domRef.current;
+    if (!el) return;
+
+    // If the element is already in or above the viewport on mount (above-the-fold
+    // or near-top content), make it visible immediately without waiting for the observer.
+    const rect = el.getBoundingClientRect();
+    if (rect.top < window.innerHeight) {
+      setIsVisible(true);
+      return;
+    }
+
+    // For below-the-fold elements, trigger the animation 180px BEFORE the element
+    // enters the viewport so the user never sees the invisible/collapsed state.
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setIsVisible(true);
-            observer.unobserve(entry.target); // Play animation only once
+            observer.unobserve(entry.target);
           }
         });
       },
       {
-        threshold: 0.1,
-        rootMargin: "0px 0px -40px 0px",
+        threshold: 0,
+        rootMargin: "0px 0px 180px 0px",
       }
     );
 
-    const currentTarget = domRef.current;
-    if (currentTarget) {
-      observer.observe(currentTarget);
-    }
-
-    return () => {
-      if (currentTarget) {
-        observer.unobserve(currentTarget);
-      }
-    };
+    observer.observe(el);
+    return () => observer.unobserve(el);
   }, []);
+
 
   return (
     <RevealWrapper ref={domRef} isVisible={isVisible}>
