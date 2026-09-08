@@ -4,15 +4,16 @@ import { styled } from "@mui/material/styles";
 import { Box, Typography, CircularProgress } from "@mui/material";
 
 const BannerCard = styled(Box)({
-  border: '1px solid rgba(255, 255, 255, 0.12)',
-  borderRadius: '28px',
-  backgroundColor: 'rgba(16, 16, 22, 0.18)',
-  margin: '20px 0',
-  overflow: 'hidden',
-  boxShadow: '0 20px 45px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05)',
-  position: 'relative',
-  backdropFilter: 'blur(6px) saturate(130%)',
-  WebkitBackdropFilter: 'blur(6px) saturate(130%)',
+  border: "1px solid rgba(255, 255, 255, 0.12)",
+  borderRadius: "28px",
+  backgroundColor: "rgba(16, 16, 22, 0.18)",
+  margin: "20px 0",
+  overflow: "hidden",
+  boxShadow:
+    "0 20px 45px rgba(0, 0, 0, 0.65), inset 0 1px 0 rgba(255, 255, 255, 0.05)",
+  position: "relative",
+  backdropFilter: "blur(6px) saturate(130%)",
+  WebkitBackdropFilter: "blur(6px) saturate(130%)",
 });
 
 const ImageContainer = styled(Box)({
@@ -35,14 +36,14 @@ const BannerVideo = styled("video")({
 });
 
 const LoaderContainer = styled(Box)({
-  position: 'absolute',
+  position: "absolute",
   inset: 0,
-  backgroundColor: '#070709', // clean solid dark background during load
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
+  backgroundColor: "#070709", // clean solid dark background during load
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
   zIndex: 2,
-  transition: 'opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+  transition: "opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
 });
 
 const TitleOverlay = styled(Box)({
@@ -50,21 +51,33 @@ const TitleOverlay = styled(Box)({
   textAlign: "center",
 });
 
-const CustomLogoImg = styled('img')({
-  width: '90%',
-  maxWidth: '290px',
-  height: 'auto',
-  margin: '8px auto 18px',
-  display: 'block',
+const CustomLogoImg = styled("img")({
+  width: "90%",
+  maxWidth: "290px",
+  height: "auto",
+  margin: "8px auto 18px",
+  display: "block",
 });
 
 const IntroDesc = styled(Typography)({
   fontFamily: "'Outfit', sans-serif",
   fontSize: "0.92rem",
-  color: 'rgba(255, 255, 255, 0.7)',
+  color: "rgba(255, 255, 255, 0.7)",
   lineHeight: 1.5,
-  maxWidth: '360px',
-  margin: '0 auto',
+  maxWidth: "360px",
+  margin: "0 auto",
+});
+
+const PortalCallout = styled(Typography)({
+  fontFamily: "'Permanent Marker', cursive",
+  fontSize: "1.25rem",
+  color: "#ff1c24",
+  textTransform: "uppercase",
+  letterSpacing: "1px",
+  marginTop: "16px",
+  textAlign: "center",
+  lineHeight: 1.3,
+  display: "block",
 });
 
 export const HeroBanner: React.FC = () => {
@@ -76,33 +89,33 @@ export const HeroBanner: React.FC = () => {
     // Process cover logo (making background transparent and black text white)
     const img = new Image();
     img.onload = () => {
-      const canvas = document.createElement('canvas');
+      const canvas = document.createElement("canvas");
       canvas.width = img.width;
       canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
+      const ctx = canvas.getContext("2d");
       if (ctx) {
         ctx.drawImage(img, 0, 0);
         const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
         const data = imgData.data;
         for (let i = 0; i < data.length; i += 4) {
           const r = data[i];
-          const g = data[i+1];
-          const b = data[i+2];
-          const a = data[i+3];
-          
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const a = data[i + 3];
+
           // Only convert black/near-black pixels of "SPIDER-MAN" to white,
           // preserving the original transparency and keeping the white MARVEL text intact.
           if (r < 50 && g < 50 && b < 50 && a > 30) {
             data[i] = 255;
-            data[i+1] = 255;
-            data[i+2] = 255;
+            data[i + 1] = 255;
+            data[i + 2] = 255;
           }
         }
         ctx.putImageData(imgData, 0, 0);
         setProcessedLogo(canvas.toDataURL());
       }
     };
-    img.src = '/mateo_logo.png';
+    img.src = "/mateo_logo.png";
   }, []);
 
   // Parallax Scroll for video background
@@ -123,7 +136,7 @@ export const HeroBanner: React.FC = () => {
       <ImageContainer>
         <BannerVideo
           ref={videoRef}
-          src="/salto-fe.mp4"
+          src="/spider-second.mp4"
           autoPlay
           loop
           muted
@@ -133,28 +146,30 @@ export const HeroBanner: React.FC = () => {
         />
 
         {/* Custom loading overlay with circular progress around pin-loader image */}
-        <LoaderContainer style={{ opacity: isVideoPlaying ? 0 : 1, pointerEvents: isVideoPlaying ? 'none' : 'auto' }}>
-          <Box sx={{ position: 'relative', display: 'inline-flex' }}>
-            <CircularProgress 
-              size={76} 
-              sx={{ color: '#ff1c24' }} 
-            />
+        <LoaderContainer
+          style={{
+            opacity: isVideoPlaying ? 0 : 1,
+            pointerEvents: isVideoPlaying ? "none" : "auto",
+          }}
+        >
+          <Box sx={{ position: "relative", display: "inline-flex" }}>
+            <CircularProgress size={76} sx={{ color: "#ff1c24" }} />
             <Box
               sx={{
                 top: 0,
                 left: 0,
                 bottom: 0,
                 right: 0,
-                position: 'absolute',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
+                position: "absolute",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
               }}
             >
-              <img 
-                src="/pin-loader.png" 
-                alt="Cargando video..." 
-                style={{ width: '40px', height: '40px', display: 'block' }} 
+              <img
+                src="/pin-loader.png"
+                alt="Cargando video..."
+                style={{ width: "40px", height: "40px", display: "block" }}
               />
             </Box>
           </Box>
@@ -162,16 +177,20 @@ export const HeroBanner: React.FC = () => {
       </ImageContainer>
 
       <TitleOverlay>
-        <CustomLogoImg 
-          src={processedLogo || '/mateo_logo.png'} 
-          alt="Spider-Man Mateo Sebastian Logo" 
+        <CustomLogoImg
+          src={processedLogo || "/mateo_logo.png"}
+          alt="Spider-Man Mateo Sebastian Logo"
         />
 
         <IntroDesc>
-          ¡Acompáñame a cruzar el portal dimensional para celebrar mi
-          cumpleaños! Prepárate para balancearte por las actividades de este
-          gran día.
+          ¡Acompáñame a celebrar mi cumpleaños y prepárate para cruzar el
+          portal, descubrir sorpresas y vivir una aventura fuera de este
+          universo!
         </IntroDesc>
+
+        <PortalCallout>
+          ¿Nos vemos al otro lado del portal?
+        </PortalCallout>
       </TitleOverlay>
     </BannerCard>
   );
