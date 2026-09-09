@@ -440,7 +440,7 @@ export const InvitationPage: React.FC = () => {
   const [hasEntered, setHasEntered] = useState(false);
   const [animateIn, setAnimateIn] = useState(false);
   const { isPlaying, toggleMusic, forcePlayMusic, playThwip, playHoverClick } =
-    useAudio("/sunflower.mp3");
+    useAudio(["/sunflower.mp3", "/amidreaming.mp3"]);
 
   const ticketsCount = getTicketsUseCase.execute();
   const kidsMenuLimit = getKidsMenuLimitUseCase.execute();

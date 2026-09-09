@@ -80,9 +80,12 @@ const CardSlot = styled(Box, {
     width: "220px",
     borderRadius: "14px",
     overflow: "hidden",
+     border: isCenter
+      ? ".01rem solid #ff000045"
+      : ".01rem solid #0400f994",
     boxShadow: isCenter
-      ? "0 28px 55px rgba(0,0,0,0.80), 0 8px 20px rgba(0,0,0,0.45)"
-      : "0 8px 20px rgba(0,0,0,0.45)",
+      ? "0 3px 12px rgba(255, 0, 0, 0.251), 0 8px 20px rgba(0,0,0,0.45)"
+      : "none",
     transform: `translateX(${translateX}) scale(${scale})`,
     transformOrigin: "center center",
     opacity,
@@ -115,7 +118,7 @@ const PhotoImg = styled("img")({
 
 // White bottom strip — polaroid signature
 const WhiteStrip = styled(Box)({
-  backgroundColor: "#ffffff",
+  backgroundColor: "#09090c",
   padding: "10px 12px 12px",
   textAlign: "center",
   minHeight: "48px",
@@ -127,7 +130,7 @@ const WhiteStrip = styled(Box)({
 const CaptionText = styled(Typography)({
   fontFamily: "'Permanent Marker', cursive",
   fontSize: "0.85rem",
-  color: "#1a1a2e",
+  color: "#f2f2f2",
   letterSpacing: "0.4px",
   lineHeight: 1.3,
 });
