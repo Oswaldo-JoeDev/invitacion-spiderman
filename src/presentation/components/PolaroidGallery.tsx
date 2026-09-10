@@ -107,6 +107,20 @@ const PhotoArea = styled(Box)({
   backgroundColor: "#111115",
   overflow: "hidden",
   position: "relative",
+  userSelect: "none",
+  WebkitUserSelect: "none",
+  WebkitTouchCallout: "none",
+});
+
+// Invisible transparent shield overlay to prevent right-click / long-press save menu
+const ProtectionShield = styled(Box)({
+  position: "absolute",
+  inset: 0,
+  zIndex: 10,
+  pointerEvents: "auto",
+  userSelect: "none",
+  WebkitUserSelect: "none",
+  WebkitTouchCallout: "none",
 });
 
 const PhotoImg = styled("img")({
@@ -114,6 +128,10 @@ const PhotoImg = styled("img")({
   height: "100%",
   objectFit: "cover",
   display: "block",
+  pointerEvents: "none", // Image cannot be dragged or right-clicked directly
+  userSelect: "none",
+  WebkitUserSelect: "none",
+  WebkitTouchCallout: "none",
 });
 
 // White bottom strip — polaroid signature
@@ -282,10 +300,13 @@ export const PolaroidGallery: React.FC<PolaroidGalleryProps> = ({ onTap }) => {
                 isCenter={isCenter}
                 onClick={!isCenter ? (offset < 0 ? goPrev : goNext) : undefined}
               >
-                <PhotoArea>
+                <PhotoArea onContextMenu={(e) => e.preventDefault()}>
+                  <ProtectionShield onContextMenu={(e) => e.preventDefault()} />
                   <PhotoImg
                     src={src}
                     alt={`Foto ${imgIdx + 1} Galería Mateo`}
+                    draggable={false}
+                    onContextMenu={(e) => e.preventDefault()}
                     // Center card loads immediately; side cards are deferred by browser
                     loading={isCenter ? "eager" : "lazy"}
                     // Decode off main thread so it doesn't block rendering

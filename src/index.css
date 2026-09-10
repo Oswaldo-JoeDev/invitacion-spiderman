@@ -45,3 +45,17 @@ body {
   50% { filter: hue-rotate(90deg) contrast(1.5) skewX(2deg); }
   100% { filter: hue-rotate(0deg) contrast(1); }
 }
+
+/* Security & Privacy Image Protection (Disables drag, selection, and long-press save menu) */
+img {
+  -webkit-user-select: none;
+  -khtml-user-select: none;
+  -moz-user-select: none;
+  -o-user-select: none;
+  user-select: none;
+  -webkit-user-drag: none;
+  -khtml-user-drag: none;
+  -moz-user-drag: none;
+  -o-user-drag: none;
+  -webkit-touch-callout: none;
+}

@@ -27,6 +27,7 @@ import { TicketPass } from "../components/TicketPass";
 import { AudioController } from "../components/AudioController";
 import { BackgroundParticles } from "../components/BackgroundParticles";
 import { ScrollReveal } from "../components/ScrollReveal";
+import { PrivacyBlurOverlay } from "../components/PrivacyBlurOverlay";
 
 // Hooks
 import { useAudio } from "../hooks/useAudio";
@@ -436,11 +437,13 @@ const PinSeparatorImg = styled("img")({
   },
 });
 
+const AUDIO_PLAYLIST = ["/sunflower.mp3", "/amidreaming.mp3"];
+
 export const InvitationPage: React.FC = () => {
   const [hasEntered, setHasEntered] = useState(false);
   const [animateIn, setAnimateIn] = useState(false);
   const { isPlaying, toggleMusic, forcePlayMusic, playThwip, playHoverClick } =
-    useAudio(["/sunflower.mp3", "/amidreaming.mp3"]);
+    useAudio(AUDIO_PLAYLIST);
 
   const ticketsCount = getTicketsUseCase.execute();
   const kidsMenuLimit = getKidsMenuLimitUseCase.execute();
@@ -581,6 +584,9 @@ export const InvitationPage: React.FC = () => {
 
   return (
     <Box>
+      {/* Privacy Protection Blur Overlay for app-switch / multitasking screenshot prevention */}
+      <PrivacyBlurOverlay />
+
       {/* Splash overlay initial check - unmounts completely after entry to free VRAM/memory */}
       {!hasEntered && (
         <PlayOverlay onEnter={handleEnter} playThwip={playThwip} />

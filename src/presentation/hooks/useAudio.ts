@@ -4,9 +4,13 @@ import { useState, useEffect, useRef, useMemo } from 'react';
 export const useAudio = (
   playlistInput: string | string[] = ['/sunflower.mp3', '/amidreaming.mp3']
 ) => {
+  const playlistKey = Array.isArray(playlistInput)
+    ? playlistInput.join(',')
+    : playlistInput;
+
   const playlist = useMemo(() => {
     return Array.isArray(playlistInput) ? playlistInput : [playlistInput];
-  }, [playlistInput]);
+  }, [playlistKey]);
 
   const [currentTrackIndex, setCurrentTrackIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -16,7 +20,7 @@ export const useAudio = (
   const wasPlayingRef = useRef(false);
   const isTransitioningRef = useRef(false);
 
-  // Initialize and handle playback of current track in playlist
+  // Initialize current track audio instance
   useEffect(() => {
     const currentSrc = playlist[currentTrackIndex];
     const audio = new Audio(currentSrc);
@@ -29,7 +33,6 @@ export const useAudio = (
       if (isTransitioningRef.current) return;
       isTransitioningRef.current = true;
 
-      // Smooth volume level change fade out before switching
       let vol = audio.volume;
       const fadeInterval = setInterval(() => {
         vol = Math.max(0, vol - 0.15);
@@ -44,15 +47,14 @@ export const useAudio = (
 
     audio.addEventListener('ended', handleEnded);
 
-    // Auto-play next track smoothly if music was currently active
-    if (isPlaying || isTransitioningRef.current) {
+    // Auto-play next track smoothly if music was currently active or transitioning
+    if (wasPlayingRef.current || isTransitioningRef.current) {
       audio.volume = 0;
       audio
         .play()
         .then(() => {
           setIsPlaying(true);
           isTransitioningRef.current = false;
-          // Fade volume back in smoothly (cambio de nivel)
           let vol = 0;
           const fadeInInterval = setInterval(() => {
             vol = Math.min(1.0, vol + 0.15);
@@ -61,39 +63,71 @@ export const useAudio = (
           }, 50);
         })
         .catch((e) => {
-          console.warn('Audio play failed:', e);
+          console.warn('Audio transition play error:', e);
           isTransitioningRef.current = false;
         });
     }
 
-    const handleVisibilityChange = () => {
-      if (document.hidden) {
-        if (audioRef.current && !audioRef.current.paused) {
-          wasPlayingRef.current = true;
-          audioRef.current.pause();
-          setIsPlaying(false);
-        } else {
-          wasPlayingRef.current = false;
-        }
-      } else {
-        if (wasPlayingRef.current && audioRef.current) {
-          audioRef.current
-            .play()
-            .then(() => setIsPlaying(true))
-            .catch((e) => console.warn(e));
-        }
-      }
-    };
-
-    document.addEventListener('visibilitychange', handleVisibilityChange);
-
     return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange);
       audio.removeEventListener('ended', handleEnded);
       audio.pause();
       audioRef.current = null;
     };
-  }, [currentTrackIndex, playlist]);
+  }, [currentTrackIndex, playlistKey]);
+
+  // Handle visibility change & window blur/focus: pause on hide/blur, resume from exact same second on focus return
+  useEffect(() => {
+    const handlePause = () => {
+      const audio = audioRef.current;
+      if (!audio) return;
+
+      if (!audio.paused) {
+        wasPlayingRef.current = true;
+        audio.pause(); // Pauses at current second without resetting currentTime
+        setIsPlaying(false);
+      }
+    };
+
+    const handleResume = () => {
+      const audio = audioRef.current;
+      if (!audio) return;
+
+      if (wasPlayingRef.current && audio.paused) {
+        audio
+          .play() // Resumes from exact same second
+          .then(() => {
+            setIsPlaying(true);
+          })
+          .catch((e) => console.warn('Resume play error:', e));
+      }
+    };
+
+    const handleVisibilityChange = () => {
+      if (document.hidden) {
+        handlePause();
+      } else {
+        handleResume();
+      }
+    };
+
+    const handleWindowBlur = () => {
+      handlePause();
+    };
+
+    const handleWindowFocus = () => {
+      handleResume();
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    window.addEventListener('blur', handleWindowBlur);
+    window.addEventListener('focus', handleWindowFocus);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('blur', handleWindowBlur);
+      window.removeEventListener('focus', handleWindowFocus);
+    };
+  }, []);
 
   const initAudioContext = () => {
     if (!audioCtxRef.current) {
@@ -200,11 +234,14 @@ export const useAudio = (
     playThwip();
 
     if (audio.paused) {
+      wasPlayingRef.current = true;
+      audio.volume = 1.0;
       audio
         .play()
         .then(() => setIsPlaying(true))
         .catch((e) => console.warn(e));
     } else {
+      wasPlayingRef.current = false;
       audio.pause();
       setIsPlaying(false);
     }
@@ -214,10 +251,13 @@ export const useAudio = (
     const audio = audioRef.current;
     if (!audio) return;
 
+    wasPlayingRef.current = true;
+    audio.volume = 1.0;
+    setIsPlaying(true);
     audio
       .play()
       .then(() => setIsPlaying(true))
-      .catch((e) => console.warn(e));
+      .catch((e) => console.warn('forcePlayMusic failed:', e));
   };
 
   return {
