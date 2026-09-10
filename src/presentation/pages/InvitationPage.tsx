@@ -510,16 +510,9 @@ export const InvitationPage: React.FC = () => {
 
   const itineraryData = [
     {
-      time: "3:15 PM",
-      title: "Ceremonia",
-      description:
-        "Agradecimiento religioso en la Iglesia San José de la Montaña.",
-      icon: "church",
-    },
-    {
       time: "4:30 PM",
       title: "Recepción",
-      description: "Bienvenidos al Jardín de Eventos Villa Los Arcos.",
+      description: "Bienvenidos la misión está por comenzar.",
       icon: "castle",
     },
     {
@@ -539,7 +532,7 @@ export const InvitationPage: React.FC = () => {
     {
       time: "7:00 PM",
       title: "Piñata",
-      description: "A romper esa piñata.",
+      description: "A romper la piñata.",
       icon: "bat",
     },
     {
