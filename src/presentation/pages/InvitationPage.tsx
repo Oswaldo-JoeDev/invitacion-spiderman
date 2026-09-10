@@ -27,7 +27,6 @@ import { TicketPass } from "../components/TicketPass";
 import { AudioController } from "../components/AudioController";
 import { BackgroundParticles } from "../components/BackgroundParticles";
 import { ScrollReveal } from "../components/ScrollReveal";
-import { PrivacyBlurOverlay } from "../components/PrivacyBlurOverlay";
 
 // Hooks
 import { useAudio } from "../hooks/useAudio";
@@ -584,9 +583,6 @@ export const InvitationPage: React.FC = () => {
 
   return (
     <Box>
-      {/* Privacy Protection Blur Overlay for app-switch / multitasking screenshot prevention */}
-      <PrivacyBlurOverlay />
-
       {/* Splash overlay initial check - unmounts completely after entry to free VRAM/memory */}
       {!hasEntered && (
         <PlayOverlay onEnter={handleEnter} playThwip={playThwip} />
