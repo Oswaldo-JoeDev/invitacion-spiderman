@@ -1,5 +1,5 @@
 // src/presentation/components/HeroBanner.tsx
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { styled } from "@mui/material/styles";
 import { Box, Typography } from "@mui/material";
 
@@ -71,6 +71,38 @@ const PortalCallout = styled(Typography)({
 
 export const HeroBanner: React.FC = () => {
   const videoRef = useRef<HTMLVideoElement | null>(null);
+  const [processedLogo, setProcessedLogo] = useState<string | null>(null);
+
+  useEffect(() => {
+    // Process cover logo (converting black text pixels of "SPIDER-MAN" to white for dark theme)
+    const img = new Image();
+    img.onload = () => {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      if (ctx) {
+        ctx.drawImage(img, 0, 0);
+        const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        const data = imgData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          const r = data[i];
+          const g = data[i + 1];
+          const b = data[i + 2];
+          const a = data[i + 3];
+
+          if (r < 50 && g < 50 && b < 50 && a > 30) {
+            data[i] = 255;
+            data[i + 1] = 255;
+            data[i + 2] = 255;
+          }
+        }
+        ctx.putImageData(imgData, 0, 0);
+        setProcessedLogo(canvas.toDataURL());
+      }
+    };
+    img.src = "/mateo_logo.png";
+  }, []);
 
   // Parallax Scroll for video background
   useEffect(() => {
@@ -101,7 +133,7 @@ export const HeroBanner: React.FC = () => {
 
       <TitleOverlay>
         <CustomLogoImg
-          src="/mateo_logo.png"
+          src={processedLogo || "/mateo_logo.png"}
           alt="Spider-Man Mateo Sebastian Logo"
         />
 
