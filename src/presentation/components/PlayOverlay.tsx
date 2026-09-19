@@ -33,17 +33,22 @@ const OverlayWrapper = styled(Box, {
   }),
 );
 
-// Mobile: full-bleed, edge-to-edge (image crops via object-fit: cover).
-// Desktop: locked to the artwork's own aspect ratio so it doesn't get
-// stretched/zoomed to fill a wide screen — equivalent to object-fit: contain,
-// but as a real box the text can be pinned to (never exceeds the image).
+// Mobile (including phones rotated to landscape): full-bleed, edge-to-edge
+// (image crops via object-fit: cover). Desktop: locked to the artwork's own
+// aspect ratio so it doesn't get stretched/zoomed to fill a wide screen —
+// equivalent to object-fit: contain, but as a real box the text can be
+// pinned to (never exceeds the image).
+// Note: min-height guards against phones in landscape, which are often
+// wider than 768px (e.g. an iPhone at ~844px) but much shorter than any
+// real desktop viewport — without it they'd wrongly get the tiny, cramped
+// "desktop" box instead of staying full-screen.
 const StageBox = styled(Box)({
   position: "relative",
   zIndex: 2,
   width: "100%",
   height: "100%",
   overflow: "hidden",
-  "@media (min-width: 768px)": {
+  "@media (min-width: 768px) and (min-height: 500px)": {
     width: `min(100vw, calc(100dvh * ${IMAGE_RATIO}))`,
     height: `min(100dvh, calc(100vw / ${IMAGE_RATIO}))`,
   },
@@ -82,6 +87,9 @@ const TopContent = styled(Box)({
   display: "flex",
   justifyContent: "center",
   padding: "18px 20px 0",
+  "@media (max-height: 480px)": {
+    padding: "8px 16px 0",
+  },
 });
 
 // Name + age pinned to the bottom
@@ -95,6 +103,9 @@ const BottomContent = styled(Box)({
   flexDirection: "column",
   alignItems: "center",
   padding: "0 20px 28px",
+  "@media (max-height: 480px)": {
+    padding: "0 20px 10px",
+  },
 });
 
 // Dead-center over the artwork — free to sit on top of the characters
@@ -108,13 +119,18 @@ const CenterContent = styled(Box)({
   flexDirection: "column",
   alignItems: "center",
   gap: "14px",
+  "@media (max-height: 480px)": {
+    gap: "8px",
+  },
 });
 
 // Palette lifted from team.webp: deep city-night blue, with the red of the
 // spider emblem as a thin accent and a faint cyan skyline glow at rest.
 const CircleButton = styled(Button)({
-  width: "clamp(76px, 20vw, 96px)",
-  height: "clamp(76px, 20vw, 96px)",
+  // Sized off whichever of width/height is tighter, so it shrinks properly
+  // on short screens (phones in landscape) instead of only reacting to width
+  width: "clamp(64px, min(20vw, 22vh), 96px)",
+  height: "clamp(64px, min(20vw, 22vh), 96px)",
   minWidth: 0,
   borderRadius: "50%",
   background:
@@ -142,6 +158,9 @@ const CircleButton = styled(Button)({
 
 const TapIcon = styled(FaHandPointer)({
   fontSize: "1.15rem",
+  "@media (max-height: 480px)": {
+    fontSize: "1rem",
+  },
 });
 
 const CircleLabel = styled(Typography)({
@@ -150,6 +169,9 @@ const CircleLabel = styled(Typography)({
   fontSize: "0.8rem",
   letterSpacing: "1px",
   textTransform: "uppercase",
+  "@media (max-height: 480px)": {
+    fontSize: "0.7rem",
+  },
 });
 
 const HintText = styled(Typography)({
@@ -159,6 +181,9 @@ const HintText = styled(Typography)({
   textAlign: "center",
   letterSpacing: "0.3px",
   textShadow: "0 2px 6px rgba(0, 0, 0, 0.8)",
+  "@media (max-height: 480px)": {
+    fontSize: "0.65rem",
+  },
 });
 
 const DateSection = styled(Box)({
@@ -181,6 +206,9 @@ const DateNumber = styled(Typography)({
   textShadow: "0 0 12px rgba(255, 69, 32, 0.6)",
   display: "inline-block",
   animation: "dateNumberGlitch 4s infinite alternate ease-in-out",
+  "@media (max-height: 480px)": {
+    fontSize: "2.1rem",
+  },
   "@keyframes dateNumberGlitch": {
     "0%, 92%, 100%": {
       transform: "skewX(0deg) scale(1)",
@@ -222,6 +250,9 @@ const DateMonth = styled(Typography)({
   letterSpacing: "1px",
   display: "block",
   animation: "dateNumberGlitch 4s infinite alternate ease-in-out",
+  "@media (max-height: 480px)": {
+    fontSize: "0.85rem",
+  },
 });
 
 const TitleInv = styled(Typography)({
@@ -234,6 +265,9 @@ const TitleInv = styled(Typography)({
   display: "block",
   textAlign: "center",
   textShadow: "0 0 10px rgba(255, 69, 32, 0.7), 0 0 20px rgba(255, 28, 36, 0.4)",
+  "@media (max-height: 480px)": {
+    fontSize: "0.8rem",
+  },
 });
 
 const MateoNameImg = styled("img")({
@@ -244,6 +278,10 @@ const MateoNameImg = styled("img")({
   display: "block",
   filter: "drop-shadow(0 0 12px rgba(255, 69, 32, 0.6))",
   animation: "dateNumberGlitch 4s infinite alternate ease-in-out",
+  "@media (max-height: 480px)": {
+    maxWidth: "180px",
+    margin: "0 auto",
+  },
 });
 
 interface PlayOverlayProps {
