@@ -63,4 +63,5 @@ export const GALLERY_IMAGES: string[] = [
   "/Galeria/59.JPEG",
   "/Galeria/60.JPEG",
   "/Galeria/61.jpeg",
+  "/Galeria/62.jpg",
 ];

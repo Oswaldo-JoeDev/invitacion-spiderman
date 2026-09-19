@@ -524,7 +524,7 @@ export const InvitationPage: React.FC = () => {
     },
     {
       time: "6:00 PM",
-      title: "Sopresa",
+      title: "Sorpresa",
       description: "¡Visita especial!",
       icon: "show",
     },
@@ -544,7 +544,7 @@ export const InvitationPage: React.FC = () => {
     {
       time: "8:30 PM",
       title: "Baile",
-      description: "Prepara para dar tus mejores pasos arácnidos.",
+      description: "Prepárate para dar tus mejores pasos arácnidos.",
       icon: "dance",
     },
     {
@@ -572,6 +572,7 @@ export const InvitationPage: React.FC = () => {
       '<strong>Jardín de Eventos "Villa Los Arcos"</strong><br>Av. de la Manzana 74, San Miguel Xochimanga,<br>52927 Ciudad López Mateos, Méx.',
     googleMapsUrl:
       "https://maps.google.com/?q=Jardín+De+Eventos+Villa+Los+Arcos+Av+de+la+Manzana+74+San+Miguel+Xochimanga",
+    parkingUrl: "https://maps.google.com/?q=19.5705185,-99.2172318",
   };
 
   return (
@@ -748,8 +749,8 @@ export const InvitationPage: React.FC = () => {
                           }}
                         >
                           {asistencia === "Sí"
-                            ? `Boletos a confirmar: ${boletosSelected || "--"} de ${ticketsCount} autorizados`
-                            : `Boletos a liberar: ${ticketsCount} espacios`}
+                            ? `Boletos a confirmar: ${boletosSelected || "--"} de ${ticketsCount}`
+                            : `Boletos sin confirmar: ${ticketsCount} espacios`}
                         </Typography>
                       </Box>
 

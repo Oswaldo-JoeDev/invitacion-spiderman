@@ -1,8 +1,8 @@
 // src/presentation/components/ItineraryTimeline.tsx
-import React from 'react';
+import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
-import { Box, Typography } from '@mui/material';
-import { FaChurch, FaFortAwesome, FaUtensils, FaStar, FaBirthdayCake, FaDoorOpen } from 'react-icons/fa';
+import { Box, Typography, Collapse } from '@mui/material';
+import { FaChurch, FaFortAwesome, FaUtensils, FaStar, FaBirthdayCake, FaDoorOpen, FaMusic, FaChevronDown } from 'react-icons/fa';
 import { ItineraryItem } from '../../domain/entities/EventDetails';
 import { GiBaton } from 'react-icons/gi';
 
@@ -17,18 +17,38 @@ const ItineraryCard = styled(Box)({
   WebkitBackdropFilter: 'blur(6px) saturate(130%)',
 });
 
+const ItineraryHeader = styled(Box)({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  gap: '10px',
+  cursor: 'pointer',
+  userSelect: 'none',
+  margin: '10px 0',
+});
+
 const ItineraryTitle = styled(Typography)({
   textAlign: 'center',
   fontFamily: "'Space Grotesk', sans-serif",
   fontSize: '1.5rem',
   textTransform: 'uppercase',
   fontWeight: 800,
-  margin: '10px 0 20px',
 });
+
+const ChevronIcon = styled(FaChevronDown, {
+  shouldForwardProp: (prop) => prop !== 'isOpen',
+})<{ isOpen: boolean }>(({ theme, isOpen }) => ({
+  fontSize: '0.9rem',
+  color: theme.palette.primary.main,
+  transition: 'transform 0.3s ease',
+  transform: isOpen ? 'rotate(180deg)' : 'rotate(0deg)',
+  flexShrink: 0,
+}));
 
 const TimelineWrapper = styled(Box)({
   position: 'relative',
   paddingLeft: '32px',
+  paddingTop: '20px',
 });
 
 const TimelineAxis = styled(Box)({
@@ -99,6 +119,8 @@ interface ItineraryTimelineProps {
 }
 
 export const ItineraryTimeline: React.FC<ItineraryTimelineProps> = ({ items, onHover }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
   // Map icons to react-icons
   const getIcon = (iconName: string) => {
     switch (iconName) {
@@ -107,31 +129,42 @@ export const ItineraryTimeline: React.FC<ItineraryTimelineProps> = ({ items, onH
       case 'food': return <FaUtensils />;
       case 'show': return <FaStar />;
       case 'bat': return <GiBaton />;
+      case 'dance': return <FaMusic />;
       case 'cake': return <FaBirthdayCake />;
       case 'door': return <FaDoorOpen />;
       default: return <FaStar />;
     }
   };
 
+  const toggleOpen = () => {
+    onHover();
+    setIsOpen((prev) => !prev);
+  };
+
   return (
     <ItineraryCard>
-      <ItineraryTitle>Itinerario del Evento</ItineraryTitle>
-      
-      <TimelineWrapper>
-        <TimelineAxis />
-        {items.map((item, idx) => (
-          <TimelineItem key={idx} onMouseEnter={onHover}>
-            <TimelineBadge className="itinerary-badge">
-              {getIcon(item.icon)}
-            </TimelineBadge>
-            <TimelineContent>
-              <TimeText>{item.time}</TimeText>
-              <HeadingText>{item.title}</HeadingText>
-              <DescText>{item.description}</DescText>
-            </TimelineContent>
-          </TimelineItem>
-        ))}
-      </TimelineWrapper>
+      <ItineraryHeader onClick={toggleOpen}>
+        <ItineraryTitle>Itinerario del Evento</ItineraryTitle>
+        <ChevronIcon isOpen={isOpen} />
+      </ItineraryHeader>
+
+      <Collapse in={isOpen} timeout={350} unmountOnExit>
+        <TimelineWrapper>
+          <TimelineAxis />
+          {items.map((item, idx) => (
+            <TimelineItem key={idx} onMouseEnter={onHover}>
+              <TimelineBadge className="itinerary-badge">
+                {getIcon(item.icon)}
+              </TimelineBadge>
+              <TimelineContent>
+                <TimeText>{item.time}</TimeText>
+                <HeadingText>{item.title}</HeadingText>
+                <DescText>{item.description}</DescText>
+              </TimelineContent>
+            </TimelineItem>
+          ))}
+        </TimelineWrapper>
+      </Collapse>
     </ItineraryCard>
   );
 };

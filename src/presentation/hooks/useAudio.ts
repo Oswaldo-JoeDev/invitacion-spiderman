@@ -25,42 +25,90 @@ export const useAudio = (
     const currentSrc = playlist[currentTrackIndex];
     const audio = new Audio(currentSrc);
     audio.loop = false; // Native loop disabled so 'ended' event triggers for playlist transition
-    audio.volume = 1.0;
+    audio.volume = wasPlayingRef.current || isTransitioningRef.current ? 0 : 1.0;
     audioRef.current = audio;
 
-    // Smooth volume fade out and switch to next track on ended
-    const handleEnded = () => {
-      if (isTransitioningRef.current) return;
-      isTransitioningRef.current = true;
+    const FADE_OUT_SECONDS = 2.5; // start fading this many seconds before the track naturally ends
+    const FADE_IN_MS = 2000;
 
-      let vol = audio.volume;
-      const fadeInterval = setInterval(() => {
-        vol = Math.max(0, vol - 0.15);
-        audio.volume = vol;
-        if (vol <= 0) {
-          clearInterval(fadeInterval);
-          // Advance to next track in loop (e.g. 0 -> 1 -> 0 -> 1...)
-          setCurrentTrackIndex((prev) => (prev + 1) % playlist.length);
-        }
-      }, 50);
+    let fadeRafId: number | null = null;
+    let fadeOutStarted = false;
+    let endFallbackTimer: ReturnType<typeof setTimeout> | null = null;
+
+    const cancelFade = () => {
+      if (fadeRafId !== null) {
+        cancelAnimationFrame(fadeRafId);
+        fadeRafId = null;
+      }
     };
 
+    const clearEndFallback = () => {
+      if (endFallbackTimer !== null) {
+        clearTimeout(endFallbackTimer);
+        endFallbackTimer = null;
+      }
+    };
+
+    // Smoothly interpolate volume over `durationMs`, driven by real elapsed time
+    // (robust against setInterval throttling) so the ramp is actually audible.
+    const rampVolume = (from: number, to: number, durationMs: number) => {
+      cancelFade();
+      const start = performance.now();
+      const step = (now: number) => {
+        const t = Math.min(1, (now - start) / durationMs);
+        audio.volume = from + (to - from) * t;
+        if (t < 1) {
+          fadeRafId = requestAnimationFrame(step);
+        } else {
+          fadeRafId = null;
+        }
+      };
+      fadeRafId = requestAnimationFrame(step);
+    };
+
+    // Advance to next track in loop (e.g. 0 -> 1 -> 0 -> 1...) once it truly ends
+    const handleEnded = () => {
+      clearEndFallback();
+      if (isTransitioningRef.current) return;
+      isTransitioningRef.current = true;
+      cancelFade();
+      setCurrentTrackIndex((prev) => (prev + 1) % playlist.length);
+    };
+
+    // Begin fading out while the track is still audibly playing, not after it stops
+    const handleTimeUpdate = () => {
+      if (fadeOutStarted || isNaN(audio.duration) || !isFinite(audio.duration)) return;
+      const remaining = audio.duration - audio.currentTime;
+      if (remaining <= FADE_OUT_SECONDS) {
+        fadeOutStarted = true;
+        const remainingMs = Math.max(200, remaining * 1000);
+        rampVolume(audio.volume, 0, remainingMs);
+
+        // Safety net: VBR-encoded mp3s often report an unreliable `duration`,
+        // and some browsers occasionally never fire `ended` for them. Force
+        // the transition if that happens so the playlist can't get stuck.
+        endFallbackTimer = setTimeout(handleEnded, remainingMs + 800);
+      }
+    };
+
+    // Skip a track that fails to load/play instead of silently stopping the playlist
+    const handleError = () => {
+      console.warn('Audio failed to load/play, skipping to next track.');
+      handleEnded();
+    };
+
+    audio.addEventListener('timeupdate', handleTimeUpdate);
     audio.addEventListener('ended', handleEnded);
+    audio.addEventListener('error', handleError);
 
     // Auto-play next track smoothly if music was currently active or transitioning
     if (wasPlayingRef.current || isTransitioningRef.current) {
-      audio.volume = 0;
       audio
         .play()
         .then(() => {
           setIsPlaying(true);
           isTransitioningRef.current = false;
-          let vol = 0;
-          const fadeInInterval = setInterval(() => {
-            vol = Math.min(1.0, vol + 0.15);
-            audio.volume = vol;
-            if (vol >= 1.0) clearInterval(fadeInInterval);
-          }, 50);
+          rampVolume(0, 1.0, FADE_IN_MS);
         })
         .catch((e) => {
           console.warn('Audio transition play error:', e);
@@ -69,7 +117,11 @@ export const useAudio = (
     }
 
     return () => {
+      audio.removeEventListener('timeupdate', handleTimeUpdate);
       audio.removeEventListener('ended', handleEnded);
+      audio.removeEventListener('error', handleError);
+      cancelFade();
+      clearEndFallback();
       audio.pause();
       audioRef.current = null;
     };

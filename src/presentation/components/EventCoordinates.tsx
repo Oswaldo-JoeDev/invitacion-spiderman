@@ -2,7 +2,7 @@
 import React from "react";
 import { styled } from "@mui/material/styles";
 import { Box, Typography } from "@mui/material";
-import { FaMapMarkerAlt } from "react-icons/fa";
+import { FaMapMarkerAlt, FaParking } from "react-icons/fa";
 import { LocationDetail } from "../../domain/entities/EventDetails";
 
 const CoordinatesTitle = styled(Typography)({
@@ -81,6 +81,12 @@ const AddressText = styled(Typography)(({ theme }) => ({
   marginBottom: "14px",
   flexGrow: 1,
 }));
+
+const LinksRow = styled(Box)({
+  display: "flex",
+  flexWrap: "wrap",
+  gap: "10px",
+});
 
 const MapsLink = styled("a")(({ theme }) => ({
   alignSelf: "flex-start",
@@ -165,13 +171,24 @@ export const EventCoordinates: React.FC<EventCoordinatesProps> = ({
           <AddressText
             dangerouslySetInnerHTML={{ __html: recepcion.address }}
           />
-          <MapsLink
-            href={recepcion.googleMapsUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <FaMapMarkerAlt /> Ver Ubicación
-          </MapsLink>
+          <LinksRow>
+            <MapsLink
+              href={recepcion.googleMapsUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <FaMapMarkerAlt /> Ver Jardin
+            </MapsLink>
+            {recepcion.parkingUrl && (
+              <MapsLink
+                href={recepcion.parkingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <FaParking /> Ver Estacionamiento
+              </MapsLink>
+            )}
+          </LinksRow>
         </DetailCard>
       </GridContainer>
     </Box>

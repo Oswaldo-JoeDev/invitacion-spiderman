@@ -3,15 +3,6 @@ import React from "react";
 import { styled } from "@mui/material/styles";
 import { Box, Typography } from "@mui/material";
 
-const TicketSectionTitle = styled(Typography)({
-  textAlign: "center",
-  fontFamily: "'Space Grotesk', sans-serif",
-  fontSize: "1.5rem",
-  textTransform: "uppercase",
-  fontWeight: 800,
-  margin: "32px 0 16px",
-});
-
 const TicketWrapperContainer = styled(Box)({
   border: "1px solid rgba(255, 255, 255, 0.12)",
   borderRadius: "20px",
@@ -107,8 +98,6 @@ export const TicketPass: React.FC<TicketPassProps> = ({
 
   return (
     <Box>
-      <TicketSectionTitle>Acceso Reservado</TicketSectionTitle>
-
       <TicketWrapperContainer>
         <TicketHeader>PASE DE ACCESO MULTIVERSAL</TicketHeader>
 

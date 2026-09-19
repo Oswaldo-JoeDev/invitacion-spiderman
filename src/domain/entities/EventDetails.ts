@@ -12,6 +12,7 @@ export interface LocationDetail {
   time: string;
   address: string;
   googleMapsUrl: string;
+  parkingUrl?: string;
 }
 
 export interface EventDetails {

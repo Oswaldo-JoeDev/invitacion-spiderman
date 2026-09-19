@@ -2,6 +2,11 @@
 import React, { useState } from "react";
 import { styled } from "@mui/material/styles";
 import { Button, Typography, Box } from "@mui/material";
+import { FaHandPointer } from "react-icons/fa";
+import { BackgroundParticles } from "./BackgroundParticles";
+
+// Team artwork's native aspect ratio (team.webp is 1264x2250)
+const IMAGE_RATIO = 1264 / 2250;
 
 const OverlayWrapper = styled(Box, {
   shouldForwardProp: (prop) => prop !== "isHidden" && prop !== "isZippingUp",
@@ -9,15 +14,18 @@ const OverlayWrapper = styled(Box, {
   ({ isHidden, isZippingUp }) => ({
     position: "fixed",
     inset: 0,
-    backgroundColor: "#070709",
+    // Subtle color glow instead of flat black, visible in the letterboxed
+    // margins on wide/desktop screens (the spiderweb canvas draws on top)
+    background:
+      "radial-gradient(circle at 18% 22%, rgba(0, 240, 255, 0.12), transparent 45%), " +
+      "radial-gradient(circle at 82% 78%, rgba(255, 28, 36, 0.12), transparent 45%), " +
+      "#070709",
     zIndex: 1000,
     display: "flex",
-    flexDirection: "column",
     alignItems: "center",
     justifyContent: "center",
     transition: "opacity 0.8s ease-in-out",
     overflow: "hidden",
-    padding: "20px",
     ...((isHidden || isZippingUp) && {
       opacity: 0,
       pointerEvents: "none",
@@ -25,77 +33,146 @@ const OverlayWrapper = styled(Box, {
   }),
 );
 
+// Mobile: full-bleed, edge-to-edge (image crops via object-fit: cover).
+// Desktop: locked to the artwork's own aspect ratio so it doesn't get
+// stretched/zoomed to fill a wide screen — equivalent to object-fit: contain,
+// but as a real box the text can be pinned to (never exceeds the image).
+const StageBox = styled(Box)({
+  position: "relative",
+  zIndex: 2,
+  width: "100%",
+  height: "100%",
+  overflow: "hidden",
+  "@media (min-width: 768px)": {
+    width: `min(100vw, calc(100dvh * ${IMAGE_RATIO}))`,
+    height: `min(100dvh, calc(100vw / ${IMAGE_RATIO}))`,
+  },
+});
+
 const LogoImg = styled("img")({
   position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
+  inset: 0,
   width: "100%",
   height: "100%",
   objectFit: "cover",
-  objectPosition: "center top",
-  opacity: 0.72,
+  objectPosition: "center center",
   zIndex: 1,
   pointerEvents: "none",
 });
 
+// Light scrim overall + a bit stronger at the very top/bottom edges so the
+// kicker line and the name/age block stay readable. The artwork (and the
+// circular button sitting over it) stays fully visible in the middle.
 const VignetteOverlay = styled(Box)({
   position: "absolute",
   inset: 0,
   background:
-    "linear-gradient(to bottom, rgba(23, 19, 41, 0.4) 0%, rgba(10, 8, 18, 0.65) 60%, rgba(7, 7, 9, 0.92) 100%)",
+    "linear-gradient(to bottom, rgba(7, 7, 9, 0.7) 0%, rgba(7, 7, 9, 0.15) 16%, transparent 30%, transparent 62%, rgba(7, 7, 9, 0.55) 82%, rgba(7, 7, 9, 0.92) 100%)",
   zIndex: 2,
   pointerEvents: "none",
 });
 
-const TextCard = styled(Box)({
-  backgroundColor: "rgba(18, 14, 30, 0.68)",
-  border: "1.5px solid rgba(255, 69, 32, 0.45)",
-  borderRadius: "24px",
-  padding: "2.2rem 1.6rem",
-  width: "90dvw",
-  maxWidth: "400px",
-  boxShadow:
-    "0 20px 45px rgba(0, 0, 0, 0.8), 0 0 30px rgba(255, 69, 32, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.15)",
-  backdropFilter: "blur(12px) saturate(140%)",
-  WebkitBackdropFilter: "blur(12px) saturate(140%)",
+// Small kicker line pinned to the top
+const TopContent = styled(Box)({
+  position: "absolute",
+  top: 0,
+  left: 0,
+  right: 0,
+  zIndex: 3,
+  display: "flex",
+  justifyContent: "center",
+  padding: "18px 20px 0",
+});
+
+// Name + age pinned to the bottom
+const BottomContent = styled(Box)({
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  right: 0,
+  zIndex: 3,
   display: "flex",
   flexDirection: "column",
   alignItems: "center",
-  position: "relative",
-  zIndex: 3,
+  padding: "0 20px 28px",
 });
 
-const StartButton = styled(Button)({
-  backgroundColor: "#ff4520",
+// Dead-center over the artwork — free to sit on top of the characters
+const CenterContent = styled(Box)({
+  position: "absolute",
+  top: "50%",
+  left: "50%",
+  transform: "translate(-50%, -50%)",
+  zIndex: 3,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  gap: "14px",
+});
+
+// Palette lifted from team.webp: deep city-night blue, with the red of the
+// spider emblem as a thin accent and a faint cyan skyline glow at rest.
+const CircleButton = styled(Button)({
+  width: "clamp(76px, 20vw, 96px)",
+  height: "clamp(76px, 20vw, 96px)",
+  minWidth: 0,
+  borderRadius: "50%",
+  background:
+    "radial-gradient(circle at 35% 30%, rgba(28, 43, 69, 0.55) 0%, rgba(13, 20, 32, 0.55) 65%, rgba(7, 9, 15, 0.55) 100%)",
+  backdropFilter: "blur(8px)",
+  WebkitBackdropFilter: "blur(8px)",
+  border: "1.5px solid rgba(255, 45, 60, 0.5)",
   color: "#ffffff",
-  fontWeight: 800,
-  fontSize: "0.9rem",
-  letterSpacing: "1px",
-  padding: "14px 16px",
-  borderRadius: "50px",
-  border: "none",
-  boxShadow: "0 6px 20px rgba(255, 69, 32, 0.55), 0 0 15px rgba(255, 28, 36, 0.3)",
-  transition: "all 0.25s cubic-bezier(0.4, 0, 0.2, 1)",
-  zIndex: 1020,
-  marginTop: "12px",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: "3px",
+  boxShadow:
+    "0 6px 18px rgba(0, 0, 0, 0.55), 0 0 14px rgba(0, 240, 255, 0.18), inset 0 0 10px rgba(0, 240, 255, 0.08)",
+  transition: "all 0.25s ease",
 
   "&:hover": {
-    transform: "scale(1.03) translateY(-2px)",
-    backgroundColor: "#e63512",
-    boxShadow: "0 10px 25px rgba(255, 69, 32, 0.8), 0 0 20px rgba(0, 240, 255, 0.4)",
-    color: "#ffffff",
+    borderColor: "rgba(255, 45, 60, 0.85)",
+    boxShadow:
+      "0 6px 18px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 28, 36, 0.35), inset 0 0 10px rgba(0, 240, 255, 0.12)",
+    transform: "scale(1.05)",
   },
+});
+
+const TapIcon = styled(FaHandPointer)({
+  fontSize: "1.15rem",
+});
+
+const CircleLabel = styled(Typography)({
+  fontFamily: "'Space Grotesk', sans-serif",
+  fontWeight: 800,
+  fontSize: "0.8rem",
+  letterSpacing: "1px",
+  textTransform: "uppercase",
+});
+
+const HintText = styled(Typography)({
+  fontFamily: "'Outfit', sans-serif",
+  fontSize: "0.75rem",
+  color: "rgba(255, 255, 255, 0.75)",
+  textAlign: "center",
+  letterSpacing: "0.3px",
+  textShadow: "0 2px 6px rgba(0, 0, 0, 0.8)",
 });
 
 const DateSection = styled(Box)({
   textAlign: "center",
-  padding: "10px 0",
+  padding: "4px 0 0",
   fontFamily: "'Space Grotesk', sans-serif",
+  display: "flex",
+  alignItems: "baseline",
+  justifyContent: "center",
+  gap: "10px",
 });
 
 const DateNumber = styled(Typography)({
-  fontSize: "5.2rem",
+  fontSize: "3.8rem",
   fontWeight: 400,
   lineHeight: 0.9,
   color: "#ff4520",
@@ -137,35 +214,33 @@ const DateNumber = styled(Typography)({
 });
 
 const DateMonth = styled(Typography)({
-  fontSize: "2rem",
+  fontSize: "1.5rem",
   fontWeight: 400,
   textTransform: "uppercase",
   color: "#ffffff",
   fontFamily: "'Permanent Marker', cursive",
   letterSpacing: "1px",
-  marginTop: "4px",
   display: "block",
   animation: "dateNumberGlitch 4s infinite alternate ease-in-out",
 });
 
 const TitleInv = styled(Typography)({
-  fontSize: "1.45rem",
+  fontSize: "1.1rem",
   fontWeight: 400,
   textTransform: "uppercase",
   color: "#ffffff",
   fontFamily: "'Permanent Marker', cursive",
   letterSpacing: "1px",
-  marginTop: "4px",
   display: "block",
   textAlign: "center",
   textShadow: "0 0 10px rgba(255, 69, 32, 0.7), 0 0 20px rgba(255, 28, 36, 0.4)",
 });
 
 const MateoNameImg = styled("img")({
-  width: "100%",
-  maxWidth: "280px",
+  width: "94%",
+  maxWidth: "380px",
   height: "auto",
-  margin: "8px auto 14px",
+  margin: "8px auto 0",
   display: "block",
   filter: "drop-shadow(0 0 12px rgba(255, 69, 32, 0.6))",
   animation: "dateNumberGlitch 4s infinite alternate ease-in-out",
@@ -196,37 +271,47 @@ export const PlayOverlay: React.FC<PlayOverlayProps> = ({
 
   return (
     <OverlayWrapper isHidden={isOverlayHidden} isZippingUp={isZippingUp}>
-      <LogoImg src="/fondo.primario.JPEG" alt="Spider-Man Multiverse Background" />
-      <VignetteOverlay />
+      {/* Only visible in the letterboxed margins on wide/desktop screens,
+          since StageBox otherwise fills the viewport edge-to-edge */}
+      <BackgroundParticles />
 
-      <Box
-        sx={{
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          justifyContent: "center",
-          position: "relative",
-          zIndex: 3,
-          width: "100%",
-          height: "100%",
-          padding: "20px",
-          pointerEvents: isZippingUp ? "none" : "auto",
-        }}
-      >
-        <TextCard>
-          <TitleInv>¡ESTÁS INVITADO A MI FIESTA ARÁCNIDA!</TitleInv>
+      <StageBox>
+        <LogoImg src="/team.webp" alt="Spider-Man, Miles Morales y Spider-Gwen" />
+        <VignetteOverlay />
 
-          <DateSection>
+        <Box
+          sx={{
+            position: "relative",
+            width: "100%",
+            height: "100%",
+            zIndex: 3,
+            pointerEvents: isZippingUp ? "none" : "auto",
+          }}
+        >
+          {/* Kicker line pinned to the top */}
+          <TopContent>
+            <TitleInv>¡ESTÁS INVITADO A MI FIESTA ARÁCNIDA!</TitleInv>
+          </TopContent>
+
+          {/* Circular CTA, free to sit over the artwork/characters */}
+          <CenterContent>
+            <CircleButton onClick={handleStart}>
+              <TapIcon />
+              <CircleLabel>Abrir</CircleLabel>
+            </CircleButton>
+            <HintText>Activa el sonido para la experiencia completa</HintText>
+          </CenterContent>
+
+          {/* Name + age pinned to the bottom */}
+          <BottomContent>
             <MateoNameImg src="/mateo_name.png" alt="Mateo Sebastian Name" />
-            <DateNumber>3</DateNumber>
-            <DateMonth>AÑOS</DateMonth>
-          </DateSection>
-
-          <StartButton onClick={handleStart} fullWidth>
-            INGRESAR AL MULTIVERSO 🕸️
-          </StartButton>
-        </TextCard>
-      </Box>
+            <DateSection>
+              <DateNumber>3</DateNumber>
+              <DateMonth>AÑOS</DateMonth>
+            </DateSection>
+          </BottomContent>
+        </Box>
+      </StageBox>
     </OverlayWrapper>
   );
 };
